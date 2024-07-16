@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "afe9b69ecc490a3002edae74ef2dfa81",
+    "identityHash": "6b1fbdad0bbb05832187b89213272366",
     "entities": [
       {
         "tableName": "UserEntity",
@@ -38,7 +38,7 @@
       },
       {
         "tableName": "ProgramaEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `tempoInicio` INTEGER NOT NULL, `tempoFinal` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `finishTime` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -47,14 +47,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "tempoInicio",
-            "columnName": "tempoInicio",
+            "fieldPath": "startTime",
+            "columnName": "startTime",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "tempoFinal",
-            "columnName": "tempoFinal",
+            "fieldPath": "finishTime",
+            "columnName": "finishTime",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -70,7 +70,7 @@
       },
       {
         "tableName": "PlaylistEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `id` TEXT NOT NULL, `img` TEXT NOT NULL, `name` TEXT NOT NULL, `uri` TEXT NOT NULL, `soma` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` TEXT NOT NULL, `id` TEXT NOT NULL, `img` TEXT NOT NULL, `name` TEXT NOT NULL, `uri` TEXT NOT NULL, `duration` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "userId",
@@ -103,8 +103,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "soma",
-            "columnName": "soma",
+            "fieldPath": "duration",
+            "columnName": "duration",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -172,7 +172,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'afe9b69ecc490a3002edae74ef2dfa81')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6b1fbdad0bbb05832187b89213272366')"
     ]
   }
 }

@@ -66,8 +66,8 @@ fun Home(
                         nav = navController,
                         // passar prograna
                         programa = state.programa!!,
-                        inicio = state.msToHoras(state.programa?.tempoInicio).toString(),
-                        fim = state.msToHoras(state.programa?.tempoFinal).toString(),
+                        inicio = state.msToHoras(state.programa?.startTime).toString(),
+                        fim = state.msToHoras(state.programa?.finishTime).toString(),
                         del = state.del,
                         status = state.status,
                         musica = state.musica,

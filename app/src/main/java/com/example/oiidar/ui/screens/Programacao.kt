@@ -115,7 +115,7 @@ fun Programacao(
                         onClick = { state.onShowTimer(state.showTimer)}
                     ) {
                         Text(
-                            text = state.msToHoras(state.programa?.tempoInicio)
+                            text = state.msToHoras(state.programa?.startTime)
                                 .toString(),
                             style = MaterialTheme.typography.displayMedium
                         )
@@ -124,7 +124,7 @@ fun Programacao(
                 Box (modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp)){
                     Text(
                         text = "Sua programação irá acabar ás: ${
-                            state.conversorMs(state.programa?.tempoFinal)}",
+                            state.conversorMs(state.programa?.finishTime)}",
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -136,7 +136,7 @@ fun Programacao(
 
         TimerEditorDialog(
             onDismissRequest = { state.onShowTimer(state.showTimer) },
-            time = state.msToHoras(state.programa?.tempoInicio),
+            time = state.msToHoras(state.programa?.startTime),
             salvar = {horas ->
                 coroutineScope.launch {
                     viewModel.updateProgamaInicio(state.horasToMs(horas))

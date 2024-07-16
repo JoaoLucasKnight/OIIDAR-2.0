@@ -32,11 +32,11 @@ interface Dao {
     @Insert
     suspend fun salvarPrograma(programa: ProgramaEntity)
 
-    @Query("UPDATE ProgramaEntity SET tempoInicio = :inicio WHERE id = :id")
-    suspend fun updateTempoInicio(inicio: Long, id: String)
+    @Query("UPDATE ProgramaEntity SET startTime = :inicio, finishTime = :fim WHERE id = :id")
+    suspend fun updateDuration(inicio: Long, fim: Long, id: String)
 
-    @Query("UPDATE ProgramaEntity SET tempoFinal = :fim WHERE id = :id")
-    suspend fun updateTempoFinal(fim: Long, id: String)
+    @Query("UPDATE ProgramaEntity SET finishTime = :fim WHERE id = :id")
+    suspend fun updateDuration(fim: Long, id: String)
 
 
 

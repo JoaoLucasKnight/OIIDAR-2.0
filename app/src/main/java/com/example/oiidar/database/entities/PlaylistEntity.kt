@@ -12,5 +12,5 @@ data class PlaylistEntity(
     val img: String,
     val name: String,
     val uri: String,
-    val soma: Long
+    val duration: Long
 )

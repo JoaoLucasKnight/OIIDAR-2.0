@@ -3,7 +3,7 @@ package com.example.oiidar.ui.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oiidar.database.entities.UserEntity
-import com.example.oiidar.repositories.UserRepository
+import com.example.oiidar.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthVM @Inject constructor(
-    private val repository: UserRepository
+    private val repository: Repository
 ): ViewModel(){
 
     private val _user = MutableStateFlow<UserEntity?>(null)

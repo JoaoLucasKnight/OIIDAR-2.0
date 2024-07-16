@@ -3,11 +3,9 @@ package com.example.oiidar.ui.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.oiidar.database.entities.PlaylistEntity
-import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.UserEntity
-import com.example.oiidar.repositories.UserRepository
+import com.example.oiidar.repositories.Repository
 import com.example.oiidar.ui.uiStates.ProgramaUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProgramacaoVM @Inject constructor(
-    private val repository: UserRepository
+    private val repository: Repository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(ProgramaUiState())
     val uiState = _uiState.asStateFlow()
@@ -52,13 +50,15 @@ class ProgramacaoVM @Inject constructor(
     suspend fun search(idPlaylist: String){
         viewModelScope.launch {
             try {
-               val novaPlaylist = repository.salvarPlaylist(idPlaylist, user.nameId)
-                _uiState.update {
-                    it.copy(playlitsts = _uiState.value.playlitsts+novaPlaylist)
-                }
-                val programa = repository.getPrograma(user.nameId)
-                _uiState.update {
-                    it.copy(programa = programa)
+               val newPlaylist = repository.searchPlaylist(idPlaylist, user.nameId)
+                newPlaylist?.let {
+                    _uiState.update {
+                        it.copy(playlitsts = _uiState.value.playlitsts + newPlaylist)
+                    }
+                    val programa = repository.getPrograma(user.nameId)
+                    _uiState.update {
+                        it.copy(programa = programa)
+                    }
                 }
             }catch (e: Exception){
                 Log.d("Search", e.message.toString())

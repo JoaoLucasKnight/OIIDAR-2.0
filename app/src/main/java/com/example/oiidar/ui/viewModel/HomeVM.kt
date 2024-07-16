@@ -1,8 +1,5 @@
 package com.example.oiidar.ui.viewModel
 
-import android.content.Context
-import android.util.Log
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oiidar.conectionApi.Spotify
@@ -10,8 +7,8 @@ import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.model.Horas
-import com.example.oiidar.model.ToMs
-import com.example.oiidar.repositories.UserRepository
+import com.example.oiidar.convertType.ToMs
+import com.example.oiidar.repositories.Repository
 import com.example.oiidar.ui.uiStates.HomeScreenUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeVM @Inject constructor(
-    private val repository: UserRepository,
+    private val repository: Repository,
 ):ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
@@ -110,7 +107,7 @@ class HomeVM @Inject constructor(
         }
     }
     fun atualTrack() :Pair<TrackEntity?, Long>{
-        var prog = programa.tempoInicio
+        var prog = programa.startTime
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val horasNow = Horas(now.hour.toLong(), now.minute.toLong(), now.second.toLong()).ToMs()
         lateinit var musica: TrackEntity

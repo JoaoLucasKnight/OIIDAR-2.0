@@ -36,7 +36,7 @@ fun Playlists(
                 ListItem(
                     headlineContent = { Text(playlist.name) },
                     overlineContent = { Text("PLAYLIST") },
-                    supportingContent = { Text(conversor(playlist.soma)) },
+                    supportingContent = { Text(conversor(playlist.duration)) },
                     leadingContent = {
                         AsyncImage(
                             model = playlist.img,

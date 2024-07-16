@@ -1,17 +1,10 @@
 package com.example.oiidar.ui.uiStates
 
 
-import android.util.Log
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.model.Horas
-import com.example.oiidar.model.ToMs
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.properties.Delegates
 
 data class HomeScreenUiState (
     val user: UserEntity? = null,

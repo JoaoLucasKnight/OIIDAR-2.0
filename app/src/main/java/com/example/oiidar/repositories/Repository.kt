@@ -90,7 +90,7 @@ class Repository @Inject constructor(
         }
         return entity
     }
-    private fun getDurationPlaylist(listaDeTracks: List<TrackItens>): Long{
+    fun getDurationPlaylist(listaDeTracks: List<TrackItens>): Long{
         var soma: Long = 0
         for (track in listaDeTracks) soma += track.track.durationMs
         return soma

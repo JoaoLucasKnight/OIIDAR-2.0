@@ -1,5 +1,6 @@
 package com.example.oiidar.database.dao
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -37,8 +38,6 @@ interface Dao {
 
     @Query("UPDATE ProgramaEntity SET finishTime = :fim WHERE id = :id")
     suspend fun updateDuration(fim: Long, id: String)
-
-
 
     @Query("SELECT * FROM ProgramaEntity WHERE id = :programaid")
     suspend fun retornaPrograma(programaid: String): ProgramaEntity

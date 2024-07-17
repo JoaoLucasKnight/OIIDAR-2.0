@@ -7,6 +7,7 @@ import com.example.oiidar.model.Horas
 import com.example.oiidar.model.SpotifyPlaylist
 import com.example.oiidar.model.SpotifyUser
 import com.example.oiidar.model.Track
+import com.example.oiidar.model.Tracks
 
 fun SpotifyUser.toUser(): UserEntity {
     return UserEntity(
@@ -15,14 +16,14 @@ fun SpotifyUser.toUser(): UserEntity {
         status = true
     )
 }
-fun SpotifyPlaylist.toPlaylist(userId: String): PlaylistEntity {
+fun SpotifyPlaylist.toPlaylist(userId: String, duration: Long): PlaylistEntity {
     return PlaylistEntity(
         userId = userId,
         id = id,
         img = images.first().url,
         name = name,
         uri = uri,
-        duration = duracaoPlaylist(),
+        duration = duration
     )
 }
 fun Track.toTrackEntity(idPlayist: String): TrackEntity {

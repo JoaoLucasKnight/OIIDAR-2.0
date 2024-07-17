@@ -15,7 +15,7 @@ import com.example.oiidar.net.service.UserService
 
 import javax.inject.Inject
 
-const val TAG = "OIIDAR"
+
 class Repository @Inject constructor(
     private val dao: Dao,
     private val api: UserService,
@@ -43,7 +43,6 @@ class Repository @Inject constructor(
             salvaProg(user)
         }
     } // TODO devolver um Boolean
-
     suspend fun deslogaUser(user: UserEntity){
         dao.updateStatus(false, user.nameId)
     }
@@ -71,20 +70,19 @@ class Repository @Inject constructor(
     }
     suspend fun searchPlaylist(id: String,userId: String): PlaylistEntity?{
         playApi.getPlaylist(id)?.let {
-            val entity = it.toPlaylist(userId)
             val tracks: List<TrackItens> = it.tracks.items
+            val duration = getDurationPlaylist(tracks)
+            val entity = it.toPlaylist(userId, duration)
             return salvarPlaylist(entity, tracks, userId)
-        }?: run {
-            Log.d(TAG, "searchPlaylist: Playlist não encontrada")
-            return null
-        }
+        }?: return null
     }
     private suspend fun salvarPlaylist(
         entity: PlaylistEntity,
         tracks: List<TrackItens>,
         userId: String
     ): PlaylistEntity {
-        salvarTracks(tracks, userId)
+        salvarTracks(tracks, entity.id)
+
         dao.let{
             val end = it.retornaPrograma(userId).finishTime + entity.duration
             it.salvarPlaylist(entity)
@@ -92,10 +90,16 @@ class Repository @Inject constructor(
         }
         return entity
     }
+    private fun getDurationPlaylist(listaDeTracks: List<TrackItens>): Long{
+        var soma: Long = 0
+        for (track in listaDeTracks) soma += track.track.durationMs
+        return soma
+    }
     suspend fun apagarPlaylist(id: String, userId: String) {
         dao.let {
             val playlist = it.getPlaylist(id)
             val finish = it.retornaPrograma(userId).finishTime
+            deleteTracks(id)
             it.deletePlaylist(playlist)
             it.updateDuration(finish-playlist.duration, userId)
         }
@@ -103,15 +107,15 @@ class Repository @Inject constructor(
 
 
     // ------- Tracks -------
-    suspend fun salvarTracks(lista: List<TrackItens>, playlistId: String){
+    private suspend fun salvarTracks(lista: List<TrackItens>, playlistId: String){
         for (track in lista){
             val entity = track.track.toTrackEntity(playlistId)
             dao.salvarTrack(entity)
         }
     }
-    suspend fun deleteTracks(id: String){
-        val listaTracks = dao.getAllTracksId(id)
-        for (track in listaTracks){
+    private suspend fun deleteTracks(id: String){
+        val listTracks = dao.getAllTracksId(id)
+        for (track in listTracks){
             dao.deleteTrack(track)
         }
     }

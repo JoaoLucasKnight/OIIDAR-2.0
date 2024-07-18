@@ -1,6 +1,6 @@
 package com.example.oiidar.ui.screens
 
-import android.util.Log
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,7 +81,8 @@ fun Programacao(
                     keyboardActions = KeyboardActions(
                         onSearch = {
                             coroutineScope.launch {
-                                viewModel.search(state.url)
+                                viewModel.searchAndSave(state.url)
+                                viewModel.updateProgram()
                             }
                             focusManager.clearFocus()
                         }
@@ -98,7 +98,8 @@ fun Programacao(
                 },
                     apagaPlaylist = { playlist ->
                         coroutineScope.launch {
-                            viewModel.apagarPlaylist(playlist)
+                            viewModel.removePlaylist(playlist)
+                            viewModel.updateProgram()
                         }
                     }
                 )
@@ -111,7 +112,7 @@ fun Programacao(
                         modifier = Modifier.align(Alignment.CenterVertically),
                         style = MaterialTheme.typography.headlineSmall
                     )
-                    OutlinedButton( // TODO evento de editar inicio
+                    OutlinedButton(
                         onClick = { state.onShowTimer(state.showTimer)}
                     ) {
                         Text(
@@ -139,7 +140,8 @@ fun Programacao(
             time = state.msToHoras(state.programa?.startTime),
             salvar = {horas ->
                 coroutineScope.launch {
-                    viewModel.updateProgamaInicio(state.horasToMs(horas))
+                    viewModel.updateStartProgram(state.horasToMs(horas))
+                    viewModel.updateProgram()
                     state.onShowTimer(state.showTimer)
                 }
             }

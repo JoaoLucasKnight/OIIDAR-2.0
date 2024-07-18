@@ -15,39 +15,39 @@ interface Dao {
 
     // ------ Usuarios --------
     @Insert
-    suspend fun salvarUser(user: UserEntity)
+    suspend fun saveUser(user: UserEntity)
 
     @Query("SELECT * FROM UserEntity WHERE nameId = :userid")
     suspend fun getUser(userid: String): UserEntity?
 
     @Query("SELECT * FROM UserEntity WHERE status = :status")
-    suspend fun getUserLogado(status: Boolean): UserEntity?
+    suspend fun getUserLogIn(status: Boolean): UserEntity?
 
     @Query("SELECT * FROM UserEntity WHERE nameId = :userid")
-    suspend fun retornaUser(userid: String): UserEntity
+    suspend fun returnUser(userid: String): UserEntity
 
     @Query("UPDATE UserEntity SET status = :status WHERE nameId = :userid")
     suspend fun updateStatus(status: Boolean, userid: String)
 
     // ------ Programas --------
     @Insert
-    suspend fun salvarPrograma(programa: ProgramaEntity)
+    suspend fun saveProgram(programa: ProgramaEntity)
 
-    @Query("UPDATE ProgramaEntity SET startTime = :inicio, finishTime = :fim WHERE id = :id")
-    suspend fun updateDuration(inicio: Long, fim: Long, id: String)
+    @Query("UPDATE ProgramaEntity SET startTime = :start WHERE id = :id")
+    suspend fun updateStartDuration(start: Long,  id: String)
 
-    @Query("UPDATE ProgramaEntity SET finishTime = :fim WHERE id = :id")
-    suspend fun updateDuration(fim: Long, id: String)
+    @Query("UPDATE ProgramaEntity SET finishTime = :finish WHERE id = :id")
+    suspend fun updateFinishDuration(finish: Long, id: String)
 
     @Query("SELECT * FROM ProgramaEntity WHERE id = :programaid")
-    suspend fun retornaPrograma(programaid: String): ProgramaEntity
+    suspend fun getProgram(programaid: String): ProgramaEntity
 
     // ------ Playlist  --------
     @Insert
-    suspend fun salvarPlaylist(playlist: PlaylistEntity)
+    suspend fun savePlaylist(playlist: PlaylistEntity)
 
     @Query("SELECT * FROM PlaylistEntity WHERE userId= :userId")
-    suspend fun getAllPlaylist(userId: String): List<PlaylistEntity>
+    suspend fun getPlaylists(userId: String): List<PlaylistEntity>
 
     @Query("SELECT * FROM PlaylistEntity WHERE id = :id")
     suspend fun getPlaylist(id: String): PlaylistEntity
@@ -56,11 +56,11 @@ interface Dao {
 
     // ------ Tracks --------
     @Insert
-    suspend fun salvarTrack(track: TrackEntity)
+    suspend fun saveTrack(track: TrackEntity)
     @Delete
     suspend fun deleteTrack(track: TrackEntity)
     @Query("SELECT * FROM TrackEntity WHERE playlistId = :id" )
-    suspend fun getAllTracksId(id: String): List<TrackEntity>
+    suspend fun getTracksPlaylist(id: String): List<TrackEntity>
 
     @Query("SELECT * FROM TrackEntity " )
     suspend fun getAllTracks(): List<TrackEntity>

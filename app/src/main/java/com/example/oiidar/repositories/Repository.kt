@@ -1,15 +1,14 @@
 package com.example.oiidar.repositories
 
-import android.util.Log
 import com.example.oiidar.database.dao.Dao
 import com.example.oiidar.database.entities.PlaylistEntity
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.model.TrackItens
-import com.example.oiidar.convertType.toPlaylist
 import com.example.oiidar.convertType.toTrackEntity
 import com.example.oiidar.convertType.toUser
+import com.example.oiidar.model.SpotifyPlaylist
 import com.example.oiidar.net.service.PlaylistService
 import com.example.oiidar.net.service.UserService
 
@@ -23,10 +22,10 @@ class Repository @Inject constructor(
 ){
     // ------- User -------
     private suspend fun salvaUser(user: UserEntity){
-        dao.salvarUser(user)
+        dao.saveUser(user)
     }
     suspend fun buscaUserLogado(): UserEntity?{
-        dao.getUserLogado(true)?.also {
+        dao.getUserLogIn(true)?.also {
             return it
         }?: run {
             return null
@@ -40,84 +39,57 @@ class Repository @Inject constructor(
         }?: run {
             val user = resposta.toUser()
             salvaUser(user)
-            salvaProg(user)
+            saveProgram(user)
         }
     } // TODO devolver um Boolean
     suspend fun deslogaUser(user: UserEntity){
         dao.updateStatus(false, user.nameId)
     }
-
-
     //-------- Programa -------
-    suspend fun getPrograma(userId: String): ProgramaEntity{
-        return dao.retornaPrograma(userId)
+    suspend fun getProgram(userId: String): ProgramaEntity{
+        return dao.getProgram(userId)
     }
-    suspend private fun salvaProg(entity: UserEntity){
-        dao.salvarPrograma(ProgramaEntity(entity.nameId))
+    private suspend fun saveProgram(entity: UserEntity){
+        dao.saveProgram(ProgramaEntity(entity.nameId))
     }
-    suspend fun atualizatempoInicio(ms: Long, userId: String ): ProgramaEntity{
-        val prog = dao.retornaPrograma(userId)
-        val resultado = (ms - prog.startTime)+prog.finishTime
-
-        dao.updateDuration(ms,resultado, userId)
-        return dao.retornaPrograma(userId)
+    suspend fun updateProgram(duration: Long, userId: String){
+        val program = dao.getProgram(userId)
+        val durationProgram = program.startTime + duration
+        dao.updateFinishDuration(durationProgram, userId)
     }
-
-
+    suspend fun updateStartProgram(start: Long, userId: String){
+        dao.updateStartDuration(start, userId)
+    }
     // ------- Playlist -------
-    suspend fun getAllPlaylist(userId: String): List<PlaylistEntity>{
-        return dao.getAllPlaylist(userId)
+    suspend fun getPlaylists(userId: String): List<PlaylistEntity>{
+        return dao.getPlaylists(userId)
     }
-    suspend fun searchPlaylist(id: String,userId: String): PlaylistEntity?{
-        playApi.getPlaylist(id)?.let {
-            val tracks: List<TrackItens> = it.tracks.items
-            val duration = getDurationPlaylist(tracks)
-            val entity = it.toPlaylist(userId, duration)
-            return salvarPlaylist(entity, tracks, userId)
-        }?: return null
+    suspend fun responsePlaylist(idPlaylist: String): SpotifyPlaylist{
+        return playApi.getPlaylist(idPlaylist)
     }
-    private suspend fun salvarPlaylist(
-        entity: PlaylistEntity,
-        tracks: List<TrackItens>,
-        userId: String
-    ): PlaylistEntity {
-        salvarTracks(tracks, entity.id)
-
-        dao.let{
-            val end = it.retornaPrograma(userId).finishTime + entity.duration
-            it.salvarPlaylist(entity)
-            it.updateDuration(end, userId)
-        }
-        return entity
+    suspend fun savePlaylist(entity: PlaylistEntity){
+        dao.savePlaylist(entity)
     }
-    fun getDurationPlaylist(listaDeTracks: List<TrackItens>): Long{
-        var soma: Long = 0
-        for (track in listaDeTracks) soma += track.track.durationMs
-        return soma
-    }
-    suspend fun apagarPlaylist(id: String, userId: String) {
+    suspend fun deletePlaylist(id: String) {
         dao.let {
             val playlist = it.getPlaylist(id)
-            val finish = it.retornaPrograma(userId).finishTime
-            deleteTracks(id)
             it.deletePlaylist(playlist)
-            it.updateDuration(finish-playlist.duration, userId)
         }
     }
-
-
     // ------- Tracks -------
-    private suspend fun salvarTracks(lista: List<TrackItens>, playlistId: String){
+    suspend fun saveTracks(lista: List<TrackItens>, playlistId: String){
         for (track in lista){
             val entity = track.track.toTrackEntity(playlistId)
-            dao.salvarTrack(entity)
+            dao.saveTrack(entity)
         }
     }
-    private suspend fun deleteTracks(id: String){
-        val listTracks = dao.getAllTracksId(id)
-        for (track in listTracks){
+    suspend fun deleteTracks(list: List<TrackEntity>){
+        for (track in list){
             dao.deleteTrack(track)
         }
+    }
+    suspend fun getTracksPlaylist(idPlaylist: String): List<TrackEntity>{
+        return dao.getTracksPlaylist(idPlaylist)
     }
     suspend fun getAllTracks(): List<TrackEntity>{
         return dao.getAllTracks()

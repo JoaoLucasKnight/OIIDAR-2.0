@@ -39,3 +39,4 @@ fun Track.toTrackEntity(idPlayist: String): TrackEntity {
 fun Horas.ToMs(): Long{
     return horas * 3600000 + minutos * 60000 + segundos * 1000
 }
+

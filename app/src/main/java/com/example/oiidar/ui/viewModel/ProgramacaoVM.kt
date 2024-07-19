@@ -107,7 +107,6 @@ class ProgramacaoVM @Inject constructor(
         for (track in listTrack) soma += track.duration
         Log.d(TAG,"saiu getDurationPlaylist $soma")
         return soma
-
     }
     private fun getDurationProgram(list: List<PlaylistEntity>): Long{
         Log.d(TAG,"entrou getDurationProgram")
@@ -174,7 +173,7 @@ class ProgramacaoVM @Inject constructor(
         }
         Log.d(TAG,"saiu updateStartProgram")
     }
-    private fun loadState(){
+    fun loadState(){
         _uiState.update{vazio ->
             vazio.copy(
                 onUrl = {url ->

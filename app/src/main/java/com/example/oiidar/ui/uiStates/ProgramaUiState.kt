@@ -18,6 +18,9 @@ data class ProgramaUiState(
     val onUrl: (String) -> Unit = {},
     val onShowSair: (Boolean) -> Unit = {},
     val onShowTimer: (Boolean) -> Unit = {},
+    val onAddPlaylist: (idPlaylist: String) -> Unit = {},
+    val onRemovePlaylist: (idPlaylist: String) -> Unit = {},
+    val onUpdateProgram: (ms: Long) -> Unit = {},
 ){
     fun conversorMs(ms: Long?): String {
         ms?. let {

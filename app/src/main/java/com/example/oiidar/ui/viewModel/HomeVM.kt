@@ -129,9 +129,7 @@ class HomeVM @Inject constructor(
     fun tocar(musica: TrackEntity?){
         musica?.let {
             Spotify.tocar(musica.uri)
-            viewModelScope.launch {
-                addFila(musica)
-            }
+            addFila(musica)
         }
     }
     private fun addFila(musica: TrackEntity){

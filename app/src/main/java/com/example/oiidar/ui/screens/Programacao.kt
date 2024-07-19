@@ -49,7 +49,6 @@ fun Programacao(
 ){
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
-    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(0.dp, 32.dp, 0.dp, 0.dp),
@@ -80,10 +79,7 @@ fun Programacao(
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
                         onSearch = {
-                            coroutineScope.launch {
-                                viewModel.searchAndSave(state.url)
-                                viewModel.updateProgram()
-                            }
+                            state.onAddPlaylist(state.url)
                             focusManager.clearFocus()
                         }
                     )
@@ -95,12 +91,9 @@ fun Programacao(
                 Playlists(lista = state.playlitsts,
                     conversor = { somaTotal: Long ->
                                 state.conversorMs(somaTotal)
-                },
+                    },
                     apagaPlaylist = { playlist ->
-                        coroutineScope.launch {
-                            viewModel.removePlaylist(playlist)
-                            viewModel.updateProgram()
-                        }
+                        state.onRemovePlaylist(playlist)
                     }
                 )
                 Row (
@@ -138,12 +131,9 @@ fun Programacao(
         TimerEditorDialog(
             onDismissRequest = { state.onShowTimer(state.showTimer) },
             time = state.msToHoras(state.programa?.startTime),
-            salvar = {horas ->
-                coroutineScope.launch {
-                    viewModel.updateStartProgram(state.horasToMs(horas))
-                    viewModel.updateProgram()
-                    state.onShowTimer(state.showTimer)
-                }
+            salvar = { horas ->
+                state.onUpdateProgram(state.horasToMs(horas))
+                state.onShowTimer(state.showTimer)
             }
         )
     }
@@ -155,7 +145,6 @@ fun Programacao(
 private fun ProgramacaoPreview(){
     OIIDARTheme {
         Surface {
-
         }
     }
 }

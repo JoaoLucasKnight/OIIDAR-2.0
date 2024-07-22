@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.model.Horas
-import com.example.oiidar.convertType.ToMs
+import com.example.oiidar.convertType.toMs
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -45,8 +45,8 @@ fun Relogio(
                 delay(1000)
                 // atualiza a hora
                 horas = horasAtual()
-                if(programa.startTime < horas.ToMs() &&
-                    horas.ToMs() < programa.finishTime ){
+                if(programa.startTime < horas.toMs() &&
+                    horas.toMs() < programa.finishTime ){
                     if(status == false){
                         onStatus(true)
                     }

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.oiidar.convertType.toMs
 import com.example.oiidar.ui.viewModel.ProgramacaoVM
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.Playlists
@@ -79,7 +80,7 @@ fun Programacao(
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
                         onSearch = {
-                            state.onAddPlaylist(state.url)
+                            viewModel.searchAndSave(state.url)
                             focusManager.clearFocus()
                         }
                     )
@@ -93,7 +94,7 @@ fun Programacao(
                                 state.conversorMs(somaTotal)
                     },
                     apagaPlaylist = { playlist ->
-                        state.onRemovePlaylist(playlist)
+                        viewModel.removePlaylist(playlist)
                     }
                 )
                 Row (
@@ -132,7 +133,7 @@ fun Programacao(
             onDismissRequest = { state.onShowTimer(state.showTimer) },
             time = state.msToHoras(state.programa?.startTime),
             salvar = { horas ->
-                state.onUpdateProgram(state.horasToMs(horas))
+                viewModel.updateStartProgram(horas.toMs())
                 state.onShowTimer(state.showTimer)
             }
         )

@@ -27,13 +27,14 @@ class ProgramacaoVM @Inject constructor(
     lateinit var user: UserEntity
         private set
     init {
+        loadState()
         load()
     }
-    private fun load() {
-        loadState()
+    fun load() {
         viewModelScope.launch {
             try {
-                user = repository.buscaUserLogado()!!
+                // TODO passar um bundle na navegação com o id do usuário
+                user = repository.userLogIn()!!
                 _uiState.update {
                     it.copy(user = user)
                 }
@@ -51,19 +52,21 @@ class ProgramacaoVM @Inject constructor(
             }
         }
     }
-    private suspend fun searchAndSave(idPlaylist: String){
-        Log.d(TAG,"entrou searchAndSave")
-        try {
-            val playlist = repository.responsePlaylist(idPlaylist)
-            saveTracks(playlist)
-            savePlaylist(playlist)
-            updateProgramDuration()
+    fun searchAndSave(idPlaylist: String){
+        viewModelScope.launch {
+            Log.d(TAG,"entrou searchAndSave")
+            try {
+                val playlist = repository.responsePlaylist(idPlaylist)
+                saveTracks(playlist)
+                savePlaylist(playlist)
+                updateProgramDuration()
+            }
+            catch (e: Exception){
+                Log.d(TAG,"Falha na requisição: ${e.message.toString()}")
+                e.printStackTrace()
+            }
+            Log.d(TAG,"saiu searchAndSave")
         }
-        catch (e: Exception){
-            Log.d(TAG,"Falha na requisição: ${e.message.toString()}")
-            e.printStackTrace()
-        }
-        Log.d(TAG,"saiu searchAndSave")
     }
     private suspend fun saveTracks(playlist: SpotifyPlaylist){
         Log.d(TAG,"entrou as tracks")
@@ -131,18 +134,21 @@ class ProgramacaoVM @Inject constructor(
         }
         Log.d(TAG,"saiu updateProgram")
     }
-    private suspend fun removePlaylist(id: String){
-        Log.d(TAG,"entrou removePlaylist")
-        try {
-            val list = repository.getTracksPlaylist(id)
-            deleteTracks(list)
-            deletePlaylist(id)
-            updateProgramDuration()
+    fun removePlaylist(id: String){
+        viewModelScope.launch {
+            Log.d(TAG,"entrou removePlaylist")
+            try {
+                val list = repository.getTracksPlaylist(id)
+                deleteTracks(list)
+                deletePlaylist(id)
+                updateProgramDuration()
+            }
+            catch (e: Exception){
+                Log.d(TAG,"Falha fun removePlaylist: ${e.message.toString()}")
+            }
+            Log.d(TAG,"saiu removePlaylist")
         }
-        catch (e: Exception){
-            Log.d(TAG,"Falha fun removePlaylist: ${e.message.toString()}")
-        }
-        Log.d(TAG,"saiu removePlaylist")
+
     }
     private suspend fun deleteTracks(list: List<TrackEntity>){
         Log.d(TAG,"entrou deleteTracks")
@@ -162,18 +168,20 @@ class ProgramacaoVM @Inject constructor(
         }
         Log.d(TAG,"saiu deletePlaylist")
     }
-    private suspend fun updateStartProgram(ms: Long){
-        Log.d(TAG,"entrou updateStartProgram")
-        try {
-            repository.updateStartProgram(ms, user.nameId)
-            updateProgramDuration()
+    fun updateStartProgram(ms: Long){
+        viewModelScope.launch {
+            Log.d(TAG,"entrou updateStartProgram")
+            try {
+                repository.updateStartProgram(ms, user.nameId)
+                updateProgramDuration()
+            }
+            catch (e: Exception){
+                Log.d(TAG,"Falha na atualização do inicio da programação: ${e.message.toString()}")
+            }
+            Log.d(TAG,"saiu updateStartProgram")
         }
-        catch (e: Exception){
-            Log.d(TAG,"Falha na atualização do inicio da programação: ${e.message.toString()}")
-        }
-        Log.d(TAG,"saiu updateStartProgram")
     }
-    fun loadState(){
+    private fun loadState(){
         _uiState.update{vazio ->
             vazio.copy(
                 onUrl = {url ->

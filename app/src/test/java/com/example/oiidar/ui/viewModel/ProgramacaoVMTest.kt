@@ -1,52 +1,46 @@
 package com.example.oiidar.ui.viewModel
 
-import androidx.compose.material3.SnackbarDuration
-import com.example.oiidar.database.entities.TrackEntity
+
+import com.example.oiidar.model.Images
+import com.example.oiidar.model.SpotifyPlaylist
+import com.example.oiidar.model.Tracks
 import com.example.oiidar.repositories.Repository
-import io.mockk.every
+import com.example.oiidar.ui.uiStates.ProgramaUiState
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import net.bytebuddy.matcher.ElementMatchers.any
+import kotlinx.coroutines.test.runTest
+
 import org.junit.Test
-import org.junit.jupiter.api.Assertions.*
+
 
 class ProgramacaoVMTest{
     @Test
-    fun `testar a funcao ta somando certo`(){
-        //Create an active task
-        //Give
-        val vm = mockk<ProgramacaoVM>()
-        val list = listOf<TrackEntity>(
-            TrackEntity(
-                playlistId = "play1",
-                id = "id1",
-                name = "name1",
-                img = "img1",
-                uri = "uri1",
-                duration = 1
-            ),
-            TrackEntity(
-                playlistId = "play1",
-                id = "id1",
-                name = "name1",
-                img = "img1",
-                uri = "uri1",
-                duration = 1
-            ),
-            TrackEntity(
-                playlistId = "play1",
-                id = "id1",
-                name = "name1",
-                img = "img1",
-                uri = "uri1",
-                duration = 1
-            )
+    fun checkIfSearchAndSave()=runTest {
+        //Create an active task     //Give
+        val repository = mockk<Repository>()
+        val viewModel = ProgramacaoVM(repository)
+        val img = Images("imgTest")
+        val spotifyPlaylist = SpotifyPlaylist(
+            "hrefTest","idTest",listOf(img),"nameTest", mockk<Tracks>(), "uriTest"
         )
+        coEvery {
+            repository.responsePlaylist("idplaylist")
+        } returns(spotifyPlaylist)
+        coEvery {
+            viewModel.load()
+        }returns(Unit)
 
-        //Call your function
-        // When
 
-        //Check the result
-        // Then
+        //Call your function    // When
+        viewModel.searchAndSave("idplaylist")
+
+
+        //Check the result      // Then
+        coVerify {
+            repository.responsePlaylist("idplaylist")
+        }
+
     }
 
 }

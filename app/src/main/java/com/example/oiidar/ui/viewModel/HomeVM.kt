@@ -7,7 +7,7 @@ import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.model.Horas
-import com.example.oiidar.convertType.ToMs
+import com.example.oiidar.convertType.toMs
 import com.example.oiidar.repositories.Repository
 import com.example.oiidar.ui.uiStates.HomeScreenUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +36,7 @@ class HomeVM @Inject constructor(
     private fun loadUser() {
         viewModelScope.launch {
             try {
-                user = repository.buscaUserLogado()!!
+                user = repository.userLogIn()!!
                 _uiState.update {
                     it.copy(user = user)
                 }
@@ -109,7 +109,7 @@ class HomeVM @Inject constructor(
     fun atualTrack() :Pair<TrackEntity?, Long>{
         var prog = programa.startTime
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-        val horasNow = Horas(now.hour.toLong(), now.minute.toLong(), now.second.toLong()).ToMs()
+        val horasNow = Horas(now.hour.toLong(), now.minute.toLong(), now.second.toLong()).toMs()
         lateinit var musica: TrackEntity
         var x: Long = 0
         for(t in musicas){

@@ -9,6 +9,7 @@ import com.example.oiidar.model.TrackItens
 import com.example.oiidar.convertType.toTrackEntity
 import com.example.oiidar.convertType.toUser
 import com.example.oiidar.model.SpotifyPlaylist
+import com.example.oiidar.model.SpotifyUser
 import com.example.oiidar.net.service.PlaylistService
 import com.example.oiidar.net.service.UserService
 
@@ -21,30 +22,23 @@ class Repository @Inject constructor(
     private val playApi: PlaylistService
 ){
     // ------- User -------
-    private suspend fun salvaUser(user: UserEntity){
+    suspend fun saveUser(user: UserEntity){
         dao.saveUser(user)
     }
-    suspend fun buscaUserLogado(): UserEntity?{
-        dao.getUserLogIn(true)?.also {
-            return it
-        }?: run {
-            return null
-        }
-        return null
-    }// TODO devolver um Boolean
-    suspend fun verificarSeJaEstaSalvo(){
-        val resposta = api.getUser()
-        dao.getUser(resposta.id)?.let {
-            dao.updateStatus(true, resposta.id)
-        }?: run {
-            val user = resposta.toUser()
-            salvaUser(user)
-            saveProgram(user)
-        }
-    } // TODO devolver um Boolean
-    suspend fun deslogaUser(user: UserEntity){
+    suspend fun userLogIn(): UserEntity? {
+        return dao.getUserLogIn(true)
+    }
+    suspend fun checkUserSave(id: String): Boolean {
+        val res = dao.getUser(id)
+        return res != null
+    }
+    suspend fun getSpotifyUser(): SpotifyUser{
+        return api.getUser()
+    }
+    suspend fun logOutUser(user: UserEntity){
         dao.updateStatus(false, user.nameId)
     }
+
     //-------- Programa -------
     suspend fun getProgram(userId: String): ProgramaEntity{
         return dao.getProgram(userId)

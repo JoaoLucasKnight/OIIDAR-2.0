@@ -1,5 +1,6 @@
 package com.example.oiidar.repositories
 
+import android.util.Log
 import com.example.oiidar.database.dao.Dao
 import com.example.oiidar.database.entities.PlaylistEntity
 import com.example.oiidar.database.entities.ProgramaEntity
@@ -26,66 +27,69 @@ class Repository @Inject constructor(
         dao.saveUser(user)
     }
     suspend fun userLogIn(): UserEntity? {
-        return dao.getUserLogIn(true)
+        return dao.getUserLogIn()
     }
-    suspend fun checkUserSave(id: String): Boolean {
-        val res = dao.getUser(id)
-        return res != null
+    suspend fun checkUserSave(id: String): UserEntity? {
+        return dao.getUser(id)
+    }
+    suspend fun updateStatusUser(user: UserEntity){
+        dao.updateStatus(!user.status, user.nameId)
     }
     suspend fun getSpotifyUser(): SpotifyUser{
         return api.getUser()
-    }
-    suspend fun logOutUser(user: UserEntity){
-        dao.updateStatus(false, user.nameId)
-    }
+    }// TODO request Api test
 
-    //-------- Programa -------
+
+    //          --------- Program ---------
     suspend fun getProgram(userId: String): ProgramaEntity{
         return dao.getProgram(userId)
     }
-    private suspend fun saveProgram(entity: UserEntity){
+    suspend fun saveProgram(entity: UserEntity){
         dao.saveProgram(ProgramaEntity(entity.nameId))
     }
-    suspend fun updateProgram(duration: Long, userId: String){
-        val program = dao.getProgram(userId)
-        val durationProgram = program.startTime + duration
-        dao.updateFinishDuration(durationProgram, userId)
+    suspend fun updateProgram(duration: Long, program: ProgramaEntity){
+        dao.updateFinishDuration(duration, program.id)
     }
-    suspend fun updateStartProgram(start: Long, userId: String){
-        dao.updateStartDuration(start, userId)
+    suspend fun updateStartProgram(start: Long, id: String){
+        dao.updateStartDuration(start, id)
     }
+
+
     // ------- Playlist -------
-    suspend fun getPlaylists(userId: String): List<PlaylistEntity>{
-        return dao.getPlaylists(userId)
+    suspend fun getPlaylist(idPlaylist: String): PlaylistEntity{
+        return dao.getPlaylist(idPlaylist)
     }
-    suspend fun responsePlaylist(idPlaylist: String): SpotifyPlaylist{
-        return playApi.getPlaylist(idPlaylist)
+    suspend fun getPlaylists(entity: UserEntity): List<PlaylistEntity>{
+        return dao.getPlaylists(entity.nameId)
     }
     suspend fun savePlaylist(entity: PlaylistEntity){
         dao.savePlaylist(entity)
     }
-    suspend fun deletePlaylist(id: String) {
-        dao.let {
-            val playlist = it.getPlaylist(id)
-            it.deletePlaylist(playlist)
-        }
+    suspend fun deletePlaylist(entity: PlaylistEntity) {
+        dao.deletePlaylist(entity)
     }
+    suspend fun responsePlaylist(idPlaylist: String): SpotifyPlaylist{
+        return playApi.getPlaylist(idPlaylist)
+    }// TODO request Api test
+
+
     // ------- Tracks -------
-    suspend fun saveTracks(lista: List<TrackItens>, playlistId: String){
-        for (track in lista){
-            val entity = track.track.toTrackEntity(playlistId)
-            dao.saveTrack(entity)
-        }
+    suspend fun saveTrack(entity: TrackEntity){
+        dao.saveTrack(entity)
     }
-    suspend fun deleteTracks(list: List<TrackEntity>){
-        for (track in list){
-            dao.deleteTrack(track)
-        }
+    suspend fun deleteTrack(track: TrackEntity){
+        dao.deleteTrack(track)
     }
     suspend fun getTracksPlaylist(idPlaylist: String): List<TrackEntity>{
         return dao.getTracksPlaylist(idPlaylist)
     }
-    suspend fun getAllTracks(): List<TrackEntity>{
-        return dao.getAllTracks()
-    }// TODO atrelar musica ao user, e buscar msuica do user
+    suspend fun getTracksUser(userId : String): List<TrackEntity>{
+        val listPlaylist = dao.getPlaylists(userId)
+        val list: MutableList<TrackEntity> = mutableListOf()
+        for (playlist in listPlaylist){
+            val music =dao.getTracksPlaylist(playlist.id)
+            list.addAll(music)
+        }
+        return list
+    }
 }

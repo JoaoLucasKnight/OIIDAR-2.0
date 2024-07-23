@@ -51,7 +51,7 @@ class HomeVM @Inject constructor(
 
     suspend fun atualiza(){
         programa = repository.getProgram(user.nameId)
-        musicas = repository.getAllTracks()
+        musicas = repository.getTracksUser(user.nameId)
         _uiState.update {
             it.copy(programa = programa)
         }

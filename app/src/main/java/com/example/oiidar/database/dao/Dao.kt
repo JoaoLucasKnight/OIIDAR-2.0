@@ -1,6 +1,5 @@
 package com.example.oiidar.database.dao
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -20,8 +19,8 @@ interface Dao {
     @Query("SELECT * FROM UserEntity WHERE nameId = :userid")
     suspend fun getUser(userid: String): UserEntity?
 
-    @Query("SELECT * FROM UserEntity WHERE status = :status")
-    suspend fun getUserLogIn(status: Boolean): UserEntity?
+    @Query("SELECT * FROM UserEntity WHERE status = true")
+    suspend fun getUserLogIn(): UserEntity?
 
     @Query("SELECT * FROM UserEntity WHERE nameId = :userid")
     suspend fun returnUser(userid: String): UserEntity
@@ -49,8 +48,8 @@ interface Dao {
     @Query("SELECT * FROM PlaylistEntity WHERE userId= :userId")
     suspend fun getPlaylists(userId: String): List<PlaylistEntity>
 
-    @Query("SELECT * FROM PlaylistEntity WHERE id = :id")
-    suspend fun getPlaylist(id: String): PlaylistEntity
+    @Query("SELECT * FROM PlaylistEntity WHERE id = :idPlaylist")
+    suspend fun getPlaylist(idPlaylist: String): PlaylistEntity
     @Delete
     suspend fun deletePlaylist(playlist: PlaylistEntity)
 
@@ -61,8 +60,4 @@ interface Dao {
     suspend fun deleteTrack(track: TrackEntity)
     @Query("SELECT * FROM TrackEntity WHERE playlistId = :id" )
     suspend fun getTracksPlaylist(id: String): List<TrackEntity>
-
-    @Query("SELECT * FROM TrackEntity " )
-    suspend fun getAllTracks(): List<TrackEntity>
-
 }

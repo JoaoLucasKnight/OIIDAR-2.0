@@ -2,6 +2,7 @@ package com.example.oiidar.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.oiidar.convertType.toUser
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,26 +18,45 @@ class AuthVM @Inject constructor(
 
     private val _user = MutableStateFlow<UserEntity?>(null)
     val user = _user.asStateFlow()
+
+    private val _destination = MutableStateFlow(false)
+    val destination = _destination.asStateFlow()
     init {
-        userLogado()
+        checkLogIn()
     }
-    private fun userLogado() {
+    fun checkSaveOrSave(){
         viewModelScope.launch {
-           _user.value = repository.buscaUserLogado()
+            val res =repository.getSpotifyUser()
+            val entity = res.toUser()
+            if (repository.checkUserSave(entity.nameId)!=null) {
+                updateStatusUser(entity)
+            }else{
+                saveUserAndProgram(entity)
+                updateStatusUser(entity)
+            }
         }
     }
-    suspend fun verificarSeEstaSalvo(){
+    private fun checkLogIn(){
         viewModelScope.launch {
-            repository.verificarSeJaEstaSalvo()
-            userLogado()
+            val result = repository.userLogIn()
+            if (result != null) {
+                _destination.value = true
+            }
         }
     }
-
-    suspend fun deslogandoUser(){
-        val userLogado = _user.value
-        userLogado?.let {
-            repository.deslogaUser(userLogado)
+    private suspend fun saveUserAndProgram(user: UserEntity){
+        repository.saveUser(user)
+        repository.saveProgram(user)
+    }
+    private fun updateStatusUser(user: UserEntity){
+        viewModelScope.launch {
+            repository.updateStatusUser(user)
         }
     }
-
+    fun updateStatusUser(){
+        viewModelScope.launch {
+            val user = repository.userLogIn()!!
+            repository.updateStatusUser(user)
+        }
+    }
 }

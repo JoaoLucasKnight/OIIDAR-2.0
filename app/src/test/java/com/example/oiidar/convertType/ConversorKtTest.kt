@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
 
 class ConvertKtTest{
-    val img = Images(
+    private val img = Images(
         //height = 300,
         url = "url teste",
         //width = 300

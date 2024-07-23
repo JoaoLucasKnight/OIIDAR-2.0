@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oiidar.convertType.toPlaylist
+import com.example.oiidar.convertType.toTrackEntity
 import com.example.oiidar.database.entities.PlaylistEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
@@ -42,7 +43,7 @@ class ProgramacaoVM @Inject constructor(
                 _uiState.update {
                     it.copy(programa = programa)
                 }
-                val playlists: List<PlaylistEntity> = repository.getPlaylists(user.nameId)
+                val playlists: List<PlaylistEntity> = repository.getPlaylists(user)
                 _uiState.update {
                     it.copy(playlitsts = playlists)
                 }
@@ -71,7 +72,12 @@ class ProgramacaoVM @Inject constructor(
     private suspend fun saveTracks(playlist: SpotifyPlaylist){
         Log.d(TAG,"entrou as tracks")
         try {
-           repository.saveTracks(playlist.tracks.items, playlist.id)
+            val list = playlist.tracks.items
+            for (track in list){
+                val entity = track.track.toTrackEntity(playlist.id)
+                repository.saveTrack(entity)
+            }
+
         }catch (e: Exception){
             Log.d(TAG,"Falha ao salvar as tracks: ${e.message.toString()}")
             e.printStackTrace()
@@ -94,9 +100,10 @@ class ProgramacaoVM @Inject constructor(
     private suspend fun updateProgramDuration(){
         Log.d(TAG,"entrou updateProgramDuration")
         try {
-            val list = repository.getPlaylists(user.nameId)
-            val duration: Long = getDurationProgram(list)
-            repository.updateProgram(duration, user.nameId)
+            val list=repository.getPlaylists(user)
+            val program=repository.getProgram(user.nameId)
+            val duration: Long = getDurationProgram(list) + program.startTime
+            repository.updateProgram(duration, program)
         }
         catch (e: Exception){
             Log.d(TAG,"Falaha ao atualizar a duração: ${e.message.toString()}")
@@ -126,7 +133,7 @@ class ProgramacaoVM @Inject constructor(
                it.copy(programa = repository.getProgram(user.nameId))
             }
             _uiState.update {
-                it.copy(playlitsts = repository.getPlaylists(user.nameId))
+                it.copy(playlitsts = repository.getPlaylists(user))
             }
         }
         catch (e: Exception){
@@ -153,16 +160,20 @@ class ProgramacaoVM @Inject constructor(
     private suspend fun deleteTracks(list: List<TrackEntity>){
         Log.d(TAG,"entrou deleteTracks")
         try {
-            repository.deleteTracks(list)
+            for (track in list){
+                repository.deleteTrack(track)
+            }
+
         } catch (e: Exception) {
             Log.d(TAG,"Falha ao apagar tracks ${e.message.toString()}")
         }
         Log.d(TAG,"saiu deleteTracks")
     }
-    private suspend fun deletePlaylist(id: String){
+    private suspend fun deletePlaylist(idPlaylist: String){
         Log.d(TAG,"entrou deletePlaylist")
         try {
-            repository.deletePlaylist(id)
+            val playlist = repository.getPlaylist(idPlaylist)
+            repository.deletePlaylist(playlist)
         } catch (e: Exception) {
             Log.d(TAG,"Falha ao apagar playlist ${e.message.toString()}")
         }

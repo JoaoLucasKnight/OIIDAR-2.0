@@ -4,7 +4,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,7 +14,6 @@ import com.example.oiidar.ui.screens.Programacao
 import com.example.oiidar.ui.viewModel.AuthVM
 import com.example.oiidar.ui.viewModel.HomeVM
 import com.example.oiidar.ui.viewModel.ProgramacaoVM
-import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,12 +23,10 @@ fun OiidarNavHost(
     authy: () -> Unit,
 ){
     val vm: AuthVM = hiltViewModel()
-    val destino by vm.user.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-
+    val destination by vm.destination.collectAsState()
     NavHost(
         navController = navController,
-        startDestination = if (destino != null) Destination.Home.route
+        startDestination = if (destination) Destination.Home.route
         else Destination.Login.route
     ){
         composable(Destination.Login.route) {
@@ -45,10 +41,8 @@ fun OiidarNavHost(
                     viewModel = viewModel,
                     navController = navController,
                     deslogar = {
-                        coroutineScope.launch {
-                            vm.deslogandoUser()
-                            exitProcess(0)
-                        }
+                        vm.updateStatusUser()
+                        exitProcess(0)
                     }
                 )
         }
@@ -57,10 +51,8 @@ fun OiidarNavHost(
             Programacao(
                 viewModel = viewModel,
                 deslogar = {
-                    coroutineScope.launch {
-                        vm.deslogandoUser()
-                        exitProcess(0)
-                    }
+                    vm.updateStatusUser()
+                    exitProcess(0)
                 }
             )
         }

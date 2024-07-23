@@ -32,8 +32,6 @@ fun Logar(
     viewModel: AuthVM,
     onAutenticar: () -> Unit
 ){
-
-    val coroutineScope = rememberCoroutineScope()
     Surface(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -62,10 +60,7 @@ fun Logar(
                     Button(
                         onClick = {
                             onAutenticar()
-                            coroutineScope.launch {
-                                delay(2000)
-                                viewModel.verificarSeEstaSalvo()
-                            }
+                            viewModel.checkSaveOrSave()
                         },
                         modifier = Modifier
                             .padding(top = 32.dp)

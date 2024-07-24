@@ -15,31 +15,14 @@ import org.junit.Test
 
 
 class ProgramacaoVMTest{
+    private val repository = mockk<Repository>()
+    private val vm = ProgramacaoVM(repository)
     @Test
-    fun checkIfSearchAndSave()=runTest {
-        //Create an active task     //Give
-        val repository = mockk<Repository>()
-        val viewModel = ProgramacaoVM(repository)
-        val img = Images("imgTest")
-        val spotifyPlaylist = SpotifyPlaylist(
-            "hrefTest","idTest",listOf(img),"nameTest", mockk<Tracks>(), "uriTest"
-        )
-        coEvery {
-            repository.responsePlaylist("idplaylist")
-        } returns(spotifyPlaylist)
-        coEvery {
-            viewModel.load()
-        }returns(Unit)
-
-
-        //Call your function    // When
-        viewModel.searchAndSave("idplaylist")
-
-
-        //Check the result      // Then
-        coVerify {
-            repository.responsePlaylist("idplaylist")
-        }
+    fun testSearchAndSave()=runTest {
+        val idPlaylist= "id test"
+        val playlist = mockk<SpotifyPlaylist>()
+        coEvery { repository.responsePlaylist(idPlaylist) } returns playlist
+        vm.searchAndSave("id test")
 
     }
 

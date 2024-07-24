@@ -1,5 +1,6 @@
 package com.example.oiidar.ui.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oiidar.conectionApi.Spotify
@@ -27,36 +28,29 @@ class HomeVM @Inject constructor(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
 
-    lateinit var musicas: List<TrackEntity>
-    lateinit var programa: ProgramaEntity
+    lateinit var tracks: List<TrackEntity>
+    lateinit var program: ProgramaEntity
     lateinit var user: UserEntity
     init {
-        loadUser()
-    }
-    private fun loadUser() {
+        loadState()
         viewModelScope.launch {
             try {
                 user = repository.userLogIn()!!
-                _uiState.update {
-                    it.copy(user = user)
-                }
-                loadState()
-
+                _uiState.update { it.copy(user = user) }
             } catch (e: Exception) {
-                e.printStackTrace()
-            }
+                Log.e("OIIDAR", e.message.toString())
+                e.printStackTrace() }
+            load()
         }
-
     }
-
-    suspend fun atualiza(){
-        programa = repository.getProgram(user.nameId)
-        musicas = repository.getTracksUser(user.nameId)
+    private suspend fun load(){
+        program = repository.getProgram(user.nameId)
+        tracks = repository.getTracksUser(user.nameId)
         _uiState.update {
-            it.copy(programa = programa)
+            it.copy(programa = program)
         }
         _uiState.update {
-            it.copy(musicas = musicas)
+            it.copy(musicas = tracks)
         }
     }
     private  fun loadState(){
@@ -73,26 +67,26 @@ class HomeVM @Inject constructor(
                      }
                 },
                 onMusica = {
-                    val (musica,delay) = atualTrack()
+                    val (now,delay) = nowTrack()
                     _uiState.update {
                         it.copy(del = delay)
                     }
                     _uiState.update {
-                        it.copy(musica = musica)
+                        it.copy(musica = now)
                     }
                 },
                 proxima = {track ->
-                    val (musica,delay) = proximaTrack(track)
+                    val (next,delay) = nextTrack(track)
                     _uiState.update {
                         it.copy(del = delay)
                     }
                     _uiState.update {
-                        it.copy(musica = musica)
+                        it.copy(musica = next)
                     }
                 },
                  atualiza = {
                     viewModelScope.launch {
-                        atualiza()
+                        load()
                         _uiState.update {
                             it.copy(carregado = true)
                         }
@@ -106,36 +100,36 @@ class HomeVM @Inject constructor(
             )
         }
     }
-    fun atualTrack() :Pair<TrackEntity?, Long>{
-        var prog = programa.startTime
+    fun nowTrack() :Pair<TrackEntity?, Long>{
+        var program = program.startTime
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val horasNow = Horas(now.hour.toLong(), now.minute.toLong(), now.second.toLong()).toMs()
         lateinit var musica: TrackEntity
         var x: Long = 0
-        for(t in musicas){
-            prog += t.duration
-            if(prog >= horasNow){
+        for(t in tracks){
+            program += t.duration
+            if(program >= horasNow){
                 musica = t
-                x = prog - horasNow
+                x = program - horasNow
                 break
             }
         }
         return Pair(musica, x)
     }
-    fun proximaTrack(track: TrackEntity): Pair<TrackEntity, Long>{
-        val musica = musicas[musicas.indexOf(track) + 1]
-        return Pair(musica, musica.duration)
+    fun nextTrack(track: TrackEntity): Pair<TrackEntity, Long>{
+        val nextTrack = tracks[tracks.indexOf(track) + 1]
+        return Pair(nextTrack, nextTrack.duration)
     }
-    fun tocar(musica: TrackEntity?){
-        musica?.let {
-            Spotify.tocar(musica.uri)
-            addFila(musica)
+    fun playTrack(track: TrackEntity?){
+        track?.let {
+            Spotify.tocar(track.uri)
+            addQueue(track)
         }
     }
-    private fun addFila(musica: TrackEntity){
-        var indice: Int = musicas.indexOf(musica) + 1
-        for(i in indice until musicas.size){
-            val uri = musicas[i].uri
+    private fun addQueue(track: TrackEntity){
+        val x : Int = tracks.indexOf(track) + 1
+        for(i in x until tracks.size){
+            val uri = tracks[i].uri
             Spotify.adionarFila(uri)
         }
     }

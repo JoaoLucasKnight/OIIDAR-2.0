@@ -78,9 +78,9 @@ fun Home(
                 },
                 bottomBar = {
                     NavBotton(
-                        musica = state?.musica,
+                        musica = state.musica,
                         gatilho = state.gatilho,
-                        tocar = { track -> viewModel.tocar(track) },
+                        tocar = { track -> viewModel.playTrack(track) },
                         onGatilho = { state.onGatilho(it) }
 
                     )

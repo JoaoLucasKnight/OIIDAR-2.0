@@ -10,9 +10,7 @@ import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 
-class Authy (
-    deuCerto: () -> Unit
-) {
+class Authy{
     companion object {
         fun authInit(launcher: ActivityResultLauncher<Intent> ,activity: Activity){
             Log.d("OIIDAR", "authInit")

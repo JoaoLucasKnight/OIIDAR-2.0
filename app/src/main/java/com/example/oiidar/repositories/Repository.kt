@@ -1,6 +1,7 @@
 package com.example.oiidar.repositories
 
 import android.util.Log
+import com.example.oiidar.convertType.toPlaylist
 import com.example.oiidar.database.dao.Dao
 import com.example.oiidar.database.entities.PlaylistEntity
 import com.example.oiidar.database.entities.ProgramaEntity
@@ -47,7 +48,7 @@ class Repository @Inject constructor(
     suspend fun saveProgram(entity: UserEntity){
         dao.saveProgram(ProgramaEntity(entity.nameId))
     }
-    suspend fun updateProgram(duration: Long, program: ProgramaEntity){
+    suspend fun updateFinishProgram(duration: Long, program: ProgramaEntity){
         dao.updateFinishDuration(duration, program.id)
     }
     suspend fun updateStartProgram(start: Long, id: String){
@@ -59,8 +60,8 @@ class Repository @Inject constructor(
     suspend fun getPlaylist(idPlaylist: String): PlaylistEntity{
         return dao.getPlaylist(idPlaylist)
     }
-    suspend fun getPlaylists(entity: UserEntity): List<PlaylistEntity>{
-        return dao.getPlaylists(entity.nameId)
+    suspend fun getPlaylists(idUser: String): List<PlaylistEntity>{
+        return dao.getPlaylists(idUser)
     }
     suspend fun savePlaylist(entity: PlaylistEntity){
         dao.savePlaylist(entity)
@@ -92,4 +93,36 @@ class Repository @Inject constructor(
         }
         return list
     }
+
+
+    // --------- Logic ---------
+    suspend fun searchAndSave(idPlaylist: String, idUser: String){
+        val spotifyPlaylist = responsePlaylist(idPlaylist)
+        var duration: Long = 0
+        for (track in spotifyPlaylist.tracks.items){
+            val entity = track.track.toTrackEntity(spotifyPlaylist.id)
+            duration += track.track.durationMs
+            saveTrack(entity)
+        }
+        val entity = spotifyPlaylist.toPlaylist(idUser, duration)
+        savePlaylist(entity)
+    }
+    suspend fun removePlaylistAndTrack(idPlaylist: String){
+        val listTrack = getTracksPlaylist(idPlaylist)
+        for (track in listTrack){
+            deleteTrack(track)
+        }
+        deletePlaylist(getPlaylist(idPlaylist))
+    }
+    suspend fun updateProgram(idUser: String){
+        val list = getPlaylists(idUser)
+        val program = getProgram(idUser)
+        var duration: Long = 0
+        for (playlist in list){
+            duration += playlist.duration
+        }
+        updateFinishProgram(duration, program)
+    }
 }
+
+

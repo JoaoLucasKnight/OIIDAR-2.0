@@ -1,6 +1,7 @@
 package com.example.oiidar.di.modules
 
-import com.example.oiidar.conectionApi.AuthInterceptor
+import com.example.oiidar.authenticator.AuthInterceptor
+import com.example.oiidar.authenticator.TokenProvider
 import com.example.oiidar.net.service.PlaylistService
 import com.example.oiidar.net.service.UserService
 import dagger.Module
@@ -59,8 +60,15 @@ object RestApiModule {
 
     @Provides
     @Singleton
-    fun providerAuthInterceptor(): AuthInterceptor {
-        return AuthInterceptor("")
+    fun providerAuthInterceptor(tokenProvider: TokenProvider): AuthInterceptor {
+        return AuthInterceptor(tokenProvider)
     }
+
+    @Provides
+    @Singleton
+    fun providerToken(): TokenProvider {
+        return TokenProvider()
+    }
+
 
 }

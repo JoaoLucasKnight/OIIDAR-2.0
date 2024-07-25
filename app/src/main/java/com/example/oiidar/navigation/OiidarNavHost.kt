@@ -19,20 +19,20 @@ import kotlin.system.exitProcess
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OiidarNavHost(
+    vm: AuthVM,
     navController: NavHostController,
-    authy: () -> Unit,
+    authInit: () -> Unit = {},
 ){
-    val vm: AuthVM = hiltViewModel()
-    val destination by vm.destination.collectAsState()
+    val user by vm.user.collectAsState()
     NavHost(
         navController = navController,
-        startDestination = if (destination) Destination.Home.route
+        startDestination = if (user != null) Destination.Home.route
         else Destination.Login.route
     ){
         composable(Destination.Login.route) {
             Logar(
                 viewModel = vm,
-                onAutenticar ={ authy() },
+                authInit = { authInit() }
             )
         }
         composable(Destination.Home.route) {
@@ -41,7 +41,7 @@ fun OiidarNavHost(
                     viewModel = viewModel,
                     navController = navController,
                     deslogar = {
-                        vm.updateStatusUser()
+                        vm.updateStatusUser(user!!)
                         exitProcess(0)
                     }
                 )
@@ -51,7 +51,7 @@ fun OiidarNavHost(
             Programacao(
                 viewModel = viewModel,
                 deslogar = {
-                    vm.updateStatusUser()
+                    vm.updateStatusUser(user!!)
                     exitProcess(0)
                 }
             )

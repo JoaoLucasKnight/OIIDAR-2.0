@@ -37,6 +37,7 @@ class Repository @Inject constructor(
         dao.updateStatus(!user.status, user.nameId)
     }
     suspend fun getSpotifyUser(): SpotifyUser{
+        Log.d("OIIDAR", api.getUser().toString())
         return api.getUser()
     }// TODO request Api test
 

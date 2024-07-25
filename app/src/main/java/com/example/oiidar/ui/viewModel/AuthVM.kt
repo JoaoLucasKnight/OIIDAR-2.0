@@ -1,10 +1,21 @@
 package com.example.oiidar.ui.viewModel
 
+import android.app.Activity
+import android.content.Intent
+import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.oiidar.authenticator.AuthInterceptor
+import com.example.oiidar.authenticator.TokenProvider
+import com.example.oiidar.contantes.CLIENT_ID
+import com.example.oiidar.contantes.REDIRECT_URI
 import com.example.oiidar.convertType.toUser
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
+import com.spotify.sdk.android.auth.AuthorizationClient
+import com.spotify.sdk.android.auth.AuthorizationRequest
+import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +35,7 @@ class AuthVM @Inject constructor(
     init {
         checkLogIn()
     }
+
     fun checkSaveOrSave(){
         viewModelScope.launch {
             val res =repository.getSpotifyUser()
@@ -34,13 +46,14 @@ class AuthVM @Inject constructor(
                 saveUserAndProgram(entity)
                 updateStatusUser(entity)
             }
+            checkLogIn()
         }
     }
     private fun checkLogIn(){
         viewModelScope.launch {
             val result = repository.userLogIn()
             if (result != null) {
-                _destination.value = true
+                _user.value = result
             }
         }
     }
@@ -48,14 +61,9 @@ class AuthVM @Inject constructor(
         repository.saveUser(user)
         repository.saveProgram(user)
     }
-    private fun updateStatusUser(user: UserEntity){
+
+    fun updateStatusUser(user: UserEntity){
         viewModelScope.launch {
-            repository.updateStatusUser(user)
-        }
-    }
-    fun updateStatusUser(){
-        viewModelScope.launch {
-            val user = repository.userLogIn()!!
             repository.updateStatusUser(user)
         }
     }

@@ -1,22 +1,25 @@
 package com.example.oiidar
 
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
-import com.example.oiidar.conectionApi.AuthInterceptor
-import com.example.oiidar.conectionApi.Authy
+import com.example.oiidar.authenticator.TokenProvider
 import com.example.oiidar.conectionApi.Spotify
-import com.example.oiidar.di.modules.AuthorizationResultContract
+import com.example.oiidar.contantes.CLIENT_ID
+import com.example.oiidar.contantes.REDIRECT_URI
 import com.example.oiidar.navigation.OiidarNavHost
 import com.example.oiidar.ui.theme.OIIDARTheme
+import com.example.oiidar.ui.viewModel.AuthVM
+import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,49 +30,51 @@ const val TAG = "OIIDAR"
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
-    lateinit var auth: (ActivityResultLauncher<AuthorizationRequest>) -> Unit
-    private lateinit var launcher: ActivityResultLauncher<AuthorizationRequest>
+    lateinit var tokenProvider: TokenProvider
 
-    @Inject
-    lateinit var authInterceptor: AuthInterceptor
+    private lateinit var authRes: ActivityResultLauncher<Intent>
 
-
-
-    //    private lateinit var launcher: ActivityResultLauncher<Intent>
-
-
+    private val vm: AuthVM by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        authRes = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val response = AuthorizationClient.getResponse(result.resultCode, result.data)
 
+            when (response.type) {
+                AuthorizationResponse.Type.TOKEN -> {
+                    val accessToken = response.accessToken
+                    Log.d("OIIDAR", "Access Token: $accessToken")
+                    tokenProvider.setToken(accessToken)
+                    vm.checkSaveOrSave()
+                }
+                AuthorizationResponse.Type.ERROR -> { Log.e("OIIDAR", "Error: ${response.error}") }
+                else -> { Log.d("OIIDAR", "Auth result: ${response.type}") }
+            }
+
+        }
         enableEdgeToEdge()
         setContent {
             OIIDARTheme {
-                launcher = registerForActivityResult(AuthorizationResultContract()) { response ->
-                    when(response.type){
-                        AuthorizationResponse.Type.TOKEN -> {
-                            // Tratar resposta bem-sucedida
-                            authInterceptor.pegaToken(response.accessToken)
-                            Log.d(TAG, "onCreate: ${response.accessToken}")
-                        }
-                        AuthorizationResponse.Type.ERROR -> {
-                            // Tratar resposta de erro
-                            Log.d(TAG, "onCreate: ${response.error}")
-                        }
-                        else -> {
-                            // outros
-                        }
-                    }
-                }
                 val navController = rememberNavController()
                 OiidarNavHost(
+                    vm = vm,
                     navController = navController,
-                    authy = { auth(launcher)}
+                    authInit = { authInit(authRes, this) }
                 )
-
             }
         }
-    }
 
+
+    }
+    private fun authInit(launcher: ActivityResultLauncher<Intent> ,activity: Activity){
+        Log.d("OIIDAR", "authInit")
+        val builder: AuthorizationRequest.Builder = AuthorizationRequest
+            .Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI)
+            .setScopes(arrayOf("user-read-private", "user-read-email"))
+        val request: AuthorizationRequest = builder.build()
+        val intent = AuthorizationClient.createLoginActivityIntent(activity,request)
+        launcher.launch(intent)
+    }
     override fun onStart() {
         super.onStart()
         Spotify.desconectar()

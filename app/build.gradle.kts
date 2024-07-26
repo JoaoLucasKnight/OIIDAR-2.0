@@ -120,12 +120,11 @@ dependencies {
     //teste
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0-RC")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     kaptTest("com.google.dagger:hilt-android-compiler:$hilt")
 
 
 
-    implementation ("androidx.activity:activity-ktx:1.8.1")
-    implementation ("androidx.fragment:fragment-ktx:1.8.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

@@ -43,7 +43,7 @@ class RepositoryUserTest{
     fun testUpdateStatusUser()= runTest {
         val user = UserEntity("test","test",true)
         coEvery { dao.updateStatus(!user.status, user.nameId) } returns Unit
-        repository.updateStatusUser(user)
+        repository.updateStatusUser(false, user.nameId)
         coVerify {
             dao.updateStatus(!user.status, user.nameId)
         }

@@ -16,13 +16,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.oiidar.R
+import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.theme.OIIDARTheme
 import com.example.oiidar.ui.viewModel.AuthVM
 import com.spotify.sdk.android.auth.AuthorizationResponse
@@ -32,10 +36,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Logar(
-    viewModel: AuthVM,
-    authInit: () -> Unit
+    vm: AuthVM,
+    authInit: () -> Unit,
+    navController: NavController
 ){
-
+    val user by vm.user.collectAsState()
     Surface(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -72,6 +77,12 @@ fun Logar(
                         Text(
                             text = "Conectar Ao Spotify",
                             style = MaterialTheme.typography.bodyLarge)
+                    }
+                    LaunchedEffect(key1 = user) {
+                        if (user != null){
+                            navController.navigate(Destination.Home.route)
+                        }
+
                     }
                 }
             }

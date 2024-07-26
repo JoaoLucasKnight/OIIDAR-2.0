@@ -39,7 +39,7 @@ class RepositoryProgramTest {
         val duration: Long = 1000
         val program = ProgramaEntity("test")
         coEvery { dao.updateFinishDuration(duration, program.id)} returns Unit
-        repository.updateProgram(duration, program)
+        repository.updateProgram(program.id)
         coVerify { dao.updateFinishDuration(duration, program.id) }
     }
     @Test

@@ -23,7 +23,5 @@ class ProgramacaoVMTest{
         val playlist = mockk<SpotifyPlaylist>()
         coEvery { repository.responsePlaylist(idPlaylist) } returns playlist
         vm.searchAndSave("id test")
-
     }
-
 }

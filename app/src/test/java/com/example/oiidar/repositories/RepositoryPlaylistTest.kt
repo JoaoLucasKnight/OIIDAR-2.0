@@ -30,7 +30,7 @@ class RepositoryPlaylistTest {
         val user =UserEntity("test","test",true)
         val playlists = listOf(playlist)
         coEvery { dao.getPlaylists(user.nameId) } returns playlists
-        repository.getPlaylists(user)
+        repository.getPlaylists(user.nameId)
         coVerify { dao.getPlaylists(user.nameId) }
     }
     @Test

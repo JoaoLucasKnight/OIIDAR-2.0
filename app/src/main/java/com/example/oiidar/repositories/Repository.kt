@@ -33,12 +33,12 @@ class Repository @Inject constructor(
     suspend fun checkUserSave(id: String): UserEntity? {
         return dao.getUser(id)
     }
-    suspend fun updateStatusUser(user: UserEntity){
-        dao.updateStatus(!user.status, user.nameId)
+    suspend fun updateStatusUser(status: Boolean, user: String){
+        dao.updateStatus(status, user)
     }
-    suspend fun getSpotifyUser(): SpotifyUser{
+    suspend fun getSpotifyUser(): UserEntity{
         Log.d("OIIDAR", api.getUser().toString())
-        return api.getUser()
+        return api.getUser().toUser()
     }// TODO request Api test
 
 
@@ -96,7 +96,7 @@ class Repository @Inject constructor(
     }
 
 
-    // --------- Logic ---------
+    // --------- Logic ---------ProgramacaoVM
     suspend fun searchAndSave(idPlaylist: String, idUser: String){
         val spotifyPlaylist = responsePlaylist(idPlaylist)
         var duration: Long = 0
@@ -124,6 +124,9 @@ class Repository @Inject constructor(
         }
         updateFinishProgram(duration, program)
     }
+
+    // --------- Logic --------- AuthVM
+
 }
 
 

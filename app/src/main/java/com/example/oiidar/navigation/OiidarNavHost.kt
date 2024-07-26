@@ -26,32 +26,28 @@ fun OiidarNavHost(
     val user by vm.user.collectAsState()
     NavHost(
         navController = navController,
-        startDestination = if (user != null) Destination.Home.route
-        else Destination.Login.route
+        startDestination = Destination.Login.route
     ){
         composable(Destination.Login.route) {
             Logar(
-                viewModel = vm,
-                authInit = { authInit() }
+                vm = vm,
+                authInit = { authInit() },
+                navController = navController
             )
         }
         composable(Destination.Home.route) {
-                val viewModel: HomeVM = hiltViewModel()
-                Home(
-                    viewModel = viewModel,
-                    navController = navController,
-                    deslogar = {
-                        vm.updateStatusUser(user!!)
-                        exitProcess(0)
-                    }
-                )
+            Home( navController = navController,
+                deslogar = { vm.updateStatusUser(false, user?.nameId!!)
+                    exitProcess(0)
+                }
+            )
         }
         composable(Destination.Prog.route) {
             val viewModel: ProgramacaoVM = hiltViewModel()
             Programacao(
                 viewModel = viewModel,
                 deslogar = {
-                    vm.updateStatusUser(user!!)
+                    vm.updateStatusUser(false, user?.nameId!!)
                     exitProcess(0)
                 }
             )

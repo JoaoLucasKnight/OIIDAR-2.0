@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.navigation.Destination
@@ -37,10 +38,10 @@ import java.sql.Time
 @Composable
 @ExperimentalMaterial3Api
 fun Home(
-    viewModel: HomeVM,
     navController : NavController,
     deslogar : () -> Unit
 ){
+    val viewModel: HomeVM = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
 
     Column (
@@ -49,8 +50,8 @@ fun Home(
             .fillMaxHeight()
             .padding(0.dp, 32.dp, 0.dp, 0.dp))
     {
-        state.atualiza()
-        if(state.carregado) {
+
+        if(state.user != null) {
             Scaffold(
                 topBar = {
                     Header(

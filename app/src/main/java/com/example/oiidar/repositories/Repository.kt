@@ -27,6 +27,9 @@ class Repository @Inject constructor(
     suspend fun saveUser(user: UserEntity){
         dao.saveUser(user)
     }
+    suspend fun deleteUser(user: UserEntity){
+        dao.deleteUser(user)
+    }
     suspend fun userLogIn(): UserEntity? {
         return dao.getUserLogIn()
     }
@@ -45,6 +48,10 @@ class Repository @Inject constructor(
     //          --------- Program ---------
     suspend fun getProgram(userId: String): ProgramaEntity{
         return dao.getProgram(userId)
+    }
+    suspend fun deleteProgram(id: String){
+        val program = getProgram(id)
+        dao.deleteProgram(program)
     }
     suspend fun saveProgram(entity: UserEntity){
         dao.saveProgram(ProgramaEntity(entity.nameId))

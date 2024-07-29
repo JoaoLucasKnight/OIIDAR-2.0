@@ -31,7 +31,7 @@ import kotlinx.coroutines.delay
 fun Body(
     pad: PaddingValues,
     nav: NavController,
-    programa: ProgramaEntity,
+    programa: ProgramaEntity?,
     inicio: String,
     del: Long,
     fim: String,

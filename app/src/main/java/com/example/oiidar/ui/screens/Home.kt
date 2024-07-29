@@ -50,7 +50,6 @@ fun Home(
             .fillMaxHeight()
             .padding(0.dp, 32.dp, 0.dp, 0.dp))
     {
-
         if(state.user != null) {
             Scaffold(
                 topBar = {
@@ -66,7 +65,7 @@ fun Home(
                         pad = innerPadding,
                         nav = navController,
                         // passar prograna
-                        programa = state.programa!!,
+                        programa = state.programa,
                         inicio = state.msToHoras(state.programa?.startTime).toString(),
                         fim = state.msToHoras(state.programa?.finishTime).toString(),
                         del = state.del,
@@ -90,6 +89,7 @@ fun Home(
         }else {
             Surface{
                 Carregamento()
+                viewModel.loadInit()
             }
         }
 

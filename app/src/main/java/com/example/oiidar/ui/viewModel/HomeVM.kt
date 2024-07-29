@@ -30,27 +30,37 @@ class HomeVM @Inject constructor(
 
     lateinit var tracks: List<TrackEntity>
     lateinit var program: ProgramaEntity
-    lateinit var user: UserEntity
+    var user: UserEntity? = null
     init {
         loadState()
+        loadInit()
+    }
+    fun load(){
         viewModelScope.launch {
             try {
-                user = repository.userLogIn()!!
-                _uiState.update { it.copy(user = user) }
-            } catch (e: Exception) {
+                user?.let {
+                    program = repository.getProgram(it.nameId)
+                    tracks = repository.getTracksUser(it.nameId)
+                    _uiState.update {
+                        it.copy(programa = program)
+                    }
+                    _uiState.update {
+                        it.copy(musicas = tracks)
+                    }
+                }
+            }catch (e: Exception){
                 Log.e("OIIDAR", e.message.toString())
-                e.printStackTrace() }
-            load()
+                e.printStackTrace()
+            }
+
         }
     }
-    private suspend fun load(){
-        program = repository.getProgram(user.nameId)
-        tracks = repository.getTracksUser(user.nameId)
-        _uiState.update {
-            it.copy(programa = program)
-        }
-        _uiState.update {
-            it.copy(musicas = tracks)
+
+    fun loadInit(){
+        viewModelScope.launch {
+            user = repository.userLogIn()
+            load()
+            _uiState.update { it.copy(user = user) }
         }
     }
     private  fun loadState(){
@@ -85,11 +95,8 @@ class HomeVM @Inject constructor(
                     }
                 },
                  atualiza = {
-                    viewModelScope.launch {
-                        load()
-                        _uiState.update {
-                            it.copy(carregado = true)
-                        }
+                    _uiState.update {
+                        it.copy(carregado = true)
                     }
                 },
                 onGatilho = {gatilho ->

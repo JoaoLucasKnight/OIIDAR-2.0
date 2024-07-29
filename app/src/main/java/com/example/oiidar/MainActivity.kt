@@ -1,6 +1,5 @@
 package com.example.oiidar
 
-
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -50,7 +49,6 @@ class MainActivity : ComponentActivity() {
                 AuthorizationResponse.Type.ERROR -> { Log.e("OIIDAR", "Error: ${response.error}") }
                 else -> { Log.d("OIIDAR", "Auth result: ${response.type}") }
             }
-
         }
         enableEdgeToEdge()
         setContent {
@@ -80,8 +78,8 @@ class MainActivity : ComponentActivity() {
         Spotify.desconectar()
         Spotify.Conectar(this)
     }
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         Spotify.desconectar()
     }
 

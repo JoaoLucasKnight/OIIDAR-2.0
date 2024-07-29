@@ -14,6 +14,10 @@ import com.example.oiidar.ui.screens.Programacao
 import com.example.oiidar.ui.viewModel.AuthVM
 import com.example.oiidar.ui.viewModel.HomeVM
 import com.example.oiidar.ui.viewModel.ProgramacaoVM
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 import kotlin.system.exitProcess
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,6 +28,9 @@ fun OiidarNavHost(
     authInit: () -> Unit = {},
 ){
     val user by vm.user.collectAsState()
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
+
+
     NavHost(
         navController = navController,
         startDestination = Destination.Login.route
@@ -37,8 +44,11 @@ fun OiidarNavHost(
         }
         composable(Destination.Home.route) {
             Home( navController = navController,
-                deslogar = { vm.updateStatusUser(false, user?.nameId!!)
-                    exitProcess(0)
+                deslogar = {
+                    coroutineScope.launch {
+                        vm.updateStatusUser(false, user?.nameId!!)
+                        exitProcess(0)
+                    }
                 }
             )
         }
@@ -47,8 +57,10 @@ fun OiidarNavHost(
             Programacao(
                 viewModel = viewModel,
                 deslogar = {
-                    vm.updateStatusUser(false, user?.nameId!!)
-                    exitProcess(0)
+                    coroutineScope.launch {
+                        vm.updateStatusUser(false, user?.nameId!!)
+                        exitProcess(0)
+                    }
                 }
             )
         }

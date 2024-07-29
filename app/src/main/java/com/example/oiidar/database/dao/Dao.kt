@@ -16,6 +16,9 @@ interface Dao {
     @Insert
     suspend fun saveUser(user: UserEntity)
 
+    @Delete
+    suspend fun deleteUser(user: UserEntity)
+
     @Query("SELECT * FROM UserEntity WHERE nameId = :userid")
     suspend fun getUser(userid: String): UserEntity?
 
@@ -31,6 +34,9 @@ interface Dao {
     // ------ Programas --------
     @Insert
     suspend fun saveProgram(programa: ProgramaEntity)
+
+    @Delete
+    suspend fun deleteProgram(programa: ProgramaEntity)
 
     @Query("UPDATE ProgramaEntity SET startTime = :start WHERE id = :id")
     suspend fun updateStartDuration(start: Long,  id: String)

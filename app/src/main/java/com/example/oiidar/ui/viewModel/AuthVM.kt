@@ -7,6 +7,7 @@ import com.example.oiidar.convertType.toUser
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -16,39 +17,58 @@ import javax.inject.Inject
 class AuthVM @Inject constructor(
     private val repository: Repository
 ): ViewModel(){
-
+    init {
+        checkLogIn()
+    }
     private val _user = MutableStateFlow<UserEntity?>(null)
     val user = _user.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            checkLogIn()
-        }
-    }
     fun checkSaveOrSave(){
-        viewModelScope.launch {
-            val res =repository.getSpotifyUser()
-            val check = repository.checkUserSave(res.nameId)
-            if (check!= null) {
-                updateStatusUser(true, res.nameId)
-            }else{
-                saveUserAndProgram(res)
+        viewModelScope.launch() {
+            try {
+                val res =repository.getSpotifyUser()
+                val check = repository.checkUserSave(res.nameId)
+                if (check!= null) {
+                    updateStatusUser(true, res.nameId)
+                }else{
+                    saveUserAndProgram(res)
+                }
+                checkLogIn()
+            }catch (e: Exception){
+                e.printStackTrace()
             }
-            checkLogIn()
         }
+
     }
-    private suspend fun checkLogIn(){
-        val result = repository.userLogIn()
-        _user.value = result
+    private fun checkLogIn(){
+        viewModelScope.launch() {
+            val result = repository.userLogIn()
+            _user.value = result
+        }
     }
     private suspend fun saveUserAndProgram(user: UserEntity){
-        repository.saveUser(user)
-        repository.saveProgram(user)
-        repository.updateStatusUser(true, user.nameId)
-    }
-    fun updateStatusUser(status: Boolean,user: String){
-        viewModelScope.launch {
-            repository.updateStatusUser(status ,user)
+        var useFlag = false
+        var programFlag = false
+        try {
+            repository.saveUser(user)
+            useFlag = true
+            repository.saveProgram(user)
+            programFlag = true
+            repository.updateStatusUser(true, user.nameId)
+        }catch (e: Exception){
+            rollback(user,useFlag, programFlag)
+            e.printStackTrace()
+
         }
+    }
+    private suspend fun rollback(userEntity: UserEntity,user: Boolean,program: Boolean){
+        try{
+            if (user) repository.deleteUser(userEntity)
+            if (program) repository.deleteProgram(userEntity.nameId)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+    }
+    suspend fun updateStatusUser(status: Boolean,user: String){
+        repository.updateStatusUser(status ,user)
     }
 }

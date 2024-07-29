@@ -24,7 +24,7 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun Relogio(
-    programa: ProgramaEntity,
+    programa: ProgramaEntity?,
     status: Boolean,
     onStatus: (Boolean) -> Unit
 ){
@@ -45,16 +45,19 @@ fun Relogio(
                 delay(1000)
                 // atualiza a hora
                 horas = horasAtual()
-                if(programa.startTime < horas.toMs() &&
-                    horas.toMs() < programa.finishTime ){
-                    if(status == false){
-                        onStatus(true)
-                    }
-                } else{
-                    if(status == true){
-                        onStatus(false)
+                programa?.let {
+                    if(programa.startTime < horas.toMs() &&
+                        horas.toMs() < it.finishTime ){
+                        if(status == false){
+                            onStatus(true)
+                        }
+                    } else{
+                        if(status == true){
+                            onStatus(false)
+                        }
                     }
                 }
+
             }
         }
 

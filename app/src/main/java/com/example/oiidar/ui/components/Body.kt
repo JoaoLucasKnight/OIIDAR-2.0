@@ -32,14 +32,8 @@ fun Body(
     pad: PaddingValues,
     nav: NavController,
     programa: ProgramaEntity?,
-    inicio: String,
-    del: Long,
-    fim: String,
     status: Boolean,
     musica: TrackEntity?,
-    onStatus: (Boolean) -> Unit,
-    onMusica: () -> Unit,
-    proximo: (TrackEntity) -> Unit
 ){
     Column(
         modifier = Modifier
@@ -50,12 +44,7 @@ fun Body(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(160.dp),
-        ){
-            Relogio(programa = programa,
-                status = status,
-                onStatus= {onStatus(it)}
-            )
-        }
+        ){ Clock() }
         Column{
             Text(
                 text = "Programação",
@@ -69,11 +58,11 @@ fun Body(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Incio: $inicio",
+                    text = "Incio: ${programa?.startTime}",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "Fim: $fim",
+                    text = "Fim: ${programa?.finishTime}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -83,7 +72,6 @@ fun Body(
                     .padding(0.dp, 16.dp)
                     .align(Alignment.CenterHorizontally),
             ) {
-                // TODO = alterar butto para editar programa
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = null
@@ -111,15 +99,11 @@ fun Body(
                             altura = 200,
                             musica = musica
                         )
-                        LaunchedEffect(key1 = musica) {
-                            delay(del)
-                            proximo(musica)
-                        }
                     }?: run {
-                        onMusica()
+                        Text("No music")
                     }
                 }else {
-                    Text("Programção em descanso")
+                    Text("No programming for the current time")
                 }
             }
         }

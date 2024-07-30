@@ -29,16 +29,7 @@ data class HomeScreenUiState (
 
     val onPlay: (String) -> Unit = {},
 
-){
-    fun msToHoras(ms: Long?): Horas{
-        ms?. let {
-            val segundos = (ms  / 1000) % 60
-            val minutos = (ms / (1000 * 60)) % 60
-            val horas = (ms / (1000 * 60 * 60))
-            return Horas(horas, minutos, segundos)
-        }?: return Horas(0,0,0)
-    }
-}
+)
 
 
 

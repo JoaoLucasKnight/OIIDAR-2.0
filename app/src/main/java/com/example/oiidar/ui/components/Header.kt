@@ -34,7 +34,7 @@ fun Header(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.oiidar), contentDescription = null,
+            painter = painterResource(id = R.drawable.oiidar), contentDescription = "logo OIIDAR",
             modifier = Modifier.size(200.dp)
         )
         TextButton(
@@ -60,6 +60,12 @@ fun Header(
 fun HeaderPreview(){
     OIIDARTheme {
         Surface {
+            Header(
+                img = null,
+                show = false,
+                onShow = {},
+                deslogar = {}
+            )
         }
     }
 }

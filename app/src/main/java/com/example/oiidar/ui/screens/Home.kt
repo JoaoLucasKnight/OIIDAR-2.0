@@ -64,16 +64,9 @@ fun Home(
                     Body(
                         pad = innerPadding,
                         nav = navController,
-                        // passar prograna
                         programa = state.programa,
-                        inicio = state.msToHoras(state.programa?.startTime).toString(),
-                        fim = state.msToHoras(state.programa?.finishTime).toString(),
-                        del = state.del,
                         status = state.status,
                         musica = state.musica,
-                        onStatus = { state.onStatus(it) },
-                        onMusica = { state.onMusica() },
-                        proximo = { state.proxima(it) },
                     )
                 },
                 bottomBar = {
@@ -86,6 +79,11 @@ fun Home(
                     )
                 }
             )
+            LaunchedEffect(key1 = state.status) {
+                while(state.status){
+                    delay(viewModel.trackNow())
+                }
+            }
         }else {
             Surface{
                 Carregamento()

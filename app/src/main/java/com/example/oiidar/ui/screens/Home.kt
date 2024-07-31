@@ -1,6 +1,5 @@
 package com.example.oiidar.ui.screens
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,26 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.oiidar.database.entities.TrackEntity
-import com.example.oiidar.navigation.Destination
-import com.example.oiidar.ui.viewModel.HomeVM
 import com.example.oiidar.ui.components.Body
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.NavBotton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
+import com.example.oiidar.ui.viewModel.HomeVM
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import java.sql.Time
 
 
 @Composable
@@ -44,13 +32,15 @@ fun Home(
     val viewModel: HomeVM = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
 
+    viewModel.loading()
     Column (
         Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(0.dp, 32.dp, 0.dp, 0.dp))
     {
-        if(state.user != null) {
+        if(state.loading == "load") {
+            viewModel.checkAndUpdateProgramStatus()
             Scaffold(
                 topBar = {
                     Header(
@@ -64,7 +54,7 @@ fun Home(
                     Body(
                         pad = innerPadding,
                         nav = navController,
-                        programa = state.programa,
+                        program = state.programa,
                         status = state.status,
                         musica = state.musica,
                     )
@@ -80,14 +70,19 @@ fun Home(
                 }
             )
             LaunchedEffect(key1 = state.status) {
-                while(state.status){
-                    delay(viewModel.trackNow())
+                Log.d("OIIDAR", "LauchedEffect ${state.status}")
+                if(state.status) {
+                    do{
+                        Log.d("OIIDAR", "Do ${state.status}")
+                        val ms = viewModel.trackNow()
+                        delay(ms)
+                    }while (ms != 0L)
                 }
+
             }
         }else {
             Surface{
                 Carregamento()
-                viewModel.loadInit()
             }
         }
 

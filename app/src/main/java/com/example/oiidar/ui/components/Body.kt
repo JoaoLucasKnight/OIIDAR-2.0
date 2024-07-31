@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.oiidar.convertType.toHoras
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.navigation.Destination
@@ -31,7 +32,7 @@ import kotlinx.coroutines.delay
 fun Body(
     pad: PaddingValues,
     nav: NavController,
-    programa: ProgramaEntity?,
+    program: ProgramaEntity?,
     status: Boolean,
     musica: TrackEntity?,
 ){
@@ -57,14 +58,19 @@ fun Body(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Incio: ${programa?.startTime}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Fim: ${programa?.finishTime}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                program?.let {
+                    val startTime = program.startTime.toHoras(it.startTime)
+                    val finishTime = program.finishTime.toHoras(it.finishTime)
+                    Text(
+                        text = "Incio: " + startTime.toString(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = "Fim: "+ finishTime.toString(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
             }
             OutlinedButton(
                 onClick = { nav.navigate(Destination.Prog.route) },

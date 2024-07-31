@@ -1,5 +1,6 @@
 package com.example.oiidar.ui.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oiidar.conectionApi.Spotify
@@ -33,34 +34,24 @@ class HomeVM @Inject constructor(
     var user: UserEntity? = null
     init {
         loadState()
-        loadInit()
+        //  Tirei o load Init do init
     }
-    fun load(){
+
+    fun loading(){
         viewModelScope.launch {
-            try {
-                user?.let {
-                    program = repository.getProgram(it.nameId)
-                    tracks = repository.getTracksUser(it.nameId)
-                    _uiState.update { state->
-                        state.copy(programa = program)
-                    }
-                    _uiState.update { state->
-                        state.copy(musicas = tracks)
-                    }
-                    checkAndUpdateProgamStatus(it)
+           val user = repository.userLogIn()
+            user?. let {
+                _uiState.update { state-> state.copy(user = it) }
+                program = repository.getProgram(it.nameId)
+                _uiState.update {state -> state.copy(programa = program) }
+                if(program.startTime != program.finishTime){
+                    val listTrack = repository.getTracksUser(it.nameId)
+                    _uiState.update { state-> state.copy(musicas = listTrack) }
                 }
-            }catch (e: Exception){
-                e.printStackTrace()
+                _uiState.update { state-> state.copy(loading = "load") }
+            }?: run {
+                Log.i("OIIDAR", "loading: user == null")
             }
-
-        }
-    }
-
-    fun loadInit(){
-        viewModelScope.launch {
-            user = repository.userLogIn()
-            load()
-            _uiState.update { it.copy(user = user) }
         }
     }
     private  fun loadState(){
@@ -71,34 +62,6 @@ class HomeVM @Inject constructor(
                         it.copy(showSair = !show)
                     }
                 },
-                onStatus = { status ->
-                     _uiState.update {
-                         it.copy(status = status)
-                     }
-                },
-                onMusica = {
-                    val (now,delay) = nowTrack()
-                    _uiState.update {
-                        it.copy(del = delay)
-                    }
-                    _uiState.update {
-                        it.copy(musica = now)
-                    }
-                },
-                proxima = {track ->
-                    val (next,delay) = nextTrack(track)
-                    _uiState.update {
-                        it.copy(del = delay)
-                    }
-                    _uiState.update {
-                        it.copy(musica = next)
-                    }
-                },
-                 atualiza = {
-                    _uiState.update {
-                        it.copy(carregado = true)
-                    }
-                },
                 onGatilho = {gatilho ->
                     _uiState.update {
                         it.copy(gatilho = gatilho)
@@ -107,48 +70,48 @@ class HomeVM @Inject constructor(
             )
         }
     }
-
     private fun clockNowHoras(): Long{
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return Horas(now.hour.toLong(), now.minute.toLong(), now.second.toLong()).toMs()
     }
-    suspend fun checkAndUpdateProgamStatus(user: UserEntity){
-        val program = repository.getProgram(user.nameId)
-        val now = clockNowHoras()
-        if(now in program.startTime..program.finishTime){
-            _uiState.update { state->
-                state.copy(status = true)
-            }
-        }else {
-            if (now < program.startTime ){
-                delay(program.startTime - now)
-                checkAndUpdateProgamStatus(user)
-            }
-            _uiState.update { state->
-                state.copy(status = false)
+    fun checkAndUpdateProgramStatus(
+        program: ProgramaEntity? = uiState.value.programa,
+        now: Long = clockNowHoras())
+    {
+        program?.let {
+            if(now in program.startTime..program.finishTime){
+                _uiState.update { state->
+                    state.copy(status = true)
+                }
+            }else {
+                _uiState.update { state->
+                    state.copy(status = false)
+                }
             }
         }
-
     }
-    fun trackNow(): Long{ // retorna o tempo que falta para a proxima musica
-        val track = uiState.value.musica
-        val listTracks = uiState.value.musicas
+    fun trackNow(
+        program: ProgramaEntity? = uiState.value.programa,
+        track: TrackEntity? = uiState.value.musica,
+        listTracks: List<TrackEntity> = uiState.value.musicas,
+        now :Long = clockNowHoras()
+    ): Long{
         return if(track == null) {
             // discoverTrackPlaying
-            discoverTrackPlaying(listTracks)
+            discoverTrackPlaying(program, listTracks, now)
         }else {
             // nextTrack
             nextTracks(track,listTracks)
         }
     }
-    private fun discoverTrackPlaying(listTracks: List<TrackEntity>): Long{
+    private fun discoverTrackPlaying(program: ProgramaEntity?,listTracks: List<TrackEntity>, now: Long = clockNowHoras()): Long{
         var delay: Long = 0
-        uiState.value.programa?.let {
+        program?.let {
             var start = it.startTime
+            if(now < start) return 0
             for (t in listTracks){
                 start += t.duration
-                val now = clockNowHoras()
-                if(start >= now){
+                if(start >= now ){
                     _uiState.update { state->
                         state.copy(musica = t)
                     }
@@ -157,33 +120,20 @@ class HomeVM @Inject constructor(
                 }
             }
         }
+
         return delay
     }
     private fun nextTracks(track: TrackEntity,listTrack: List<TrackEntity>): Long{
-        val next = listTrack[listTrack.indexOf(track) + 1]
-        _uiState.update { it.copy(musica = next) }
-        return next.duration
-    }
-    fun nowTrack() :Pair<TrackEntity?, Long>{
-        var musica: TrackEntity? = null
-        var x: Long = 0
-        uiState.value.programa?.let { program ->
-            var start = program.startTime
-            val horasNow = clockNowHoras()
-            for(t in tracks){
-                start += t.duration
-                if(start >= horasNow){
-                    musica = t
-                    x = start - horasNow
-                    break
-                }
+        if (track == listTrack.last()){
+            _uiState.update { state->
+                state.copy(musica = null)
             }
+            return 0
+        }else {
+            val next = listTrack[listTrack.indexOf(track) + 1]
+            _uiState.update { it.copy(musica = next) }
+            return next.duration
         }
-        return Pair(musica, x)
-    }
-    fun nextTrack(track: TrackEntity): Pair<TrackEntity, Long>{
-        val nextTrack = tracks[tracks.indexOf(track) + 1]
-        return Pair(nextTrack, nextTrack.duration)
     }
     fun playTrack(track: TrackEntity?){
         track?.let {

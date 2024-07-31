@@ -125,7 +125,7 @@ class Repository @Inject constructor(
     suspend fun updateProgram(idUser: String){
         val list = getPlaylists(idUser)
         val program = getProgram(idUser)
-        var duration: Long = 0
+        var duration: Long = program.startTime
         for (playlist in list){
             duration += playlist.duration
         }

@@ -12,7 +12,6 @@ import com.example.oiidar.convertType.toMs
 import com.example.oiidar.repositories.Repository
 import com.example.oiidar.ui.uiStates.HomeScreenUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,43 +27,58 @@ class HomeVM @Inject constructor(
 ):ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = _uiState.asStateFlow()
-
-    private lateinit var tracks: List<TrackEntity>
-    private lateinit var program: ProgramaEntity
-    var user: UserEntity? = null
-    init {
-        loadState()
-        //  Tirei o load Init do init
-    }
-
+    init { loadState() }
     fun loading(){
         viewModelScope.launch {
-           val user = repository.userLogIn()
-            user?. let {
-                _uiState.update { state-> state.copy(user = it) }
-                program = repository.getProgram(it.nameId)
-                _uiState.update {state -> state.copy(programa = program) }
-                if(program.startTime != program.finishTime){
-                    val listTrack = repository.getTracksUser(it.nameId)
-                    _uiState.update { state-> state.copy(musicas = listTrack) }
+            try {
+                val user = uiState.value.user
+                user?.let {
+                    loadProgram(it)
+                }?: run {
+                    loadUser()
                 }
-                _uiState.update { state-> state.copy(loading = "load") }
-            }?: run {
-                Log.i("OIIDAR", "loading: user == null")
+            }catch (e: Exception){
+                _uiState.update { state-> state.copy(loading = "ERROR") }
+                Log.i("OIIDAR", "loading: ${e.message}")
             }
         }
     }
+     suspend fun loadUser(){
+        val user = repository.userLogIn()
+        user?. let{
+            _uiState.update { state-> state.copy(user = it) }
+            loadProgram(it)
+        }?: run {
+            _uiState.update { state-> state.copy(loading = "ERROR") }
+            Log.i("OIIDAR", "loading: user == null")
+        }
+    }
+    private suspend fun loadProgram(user: UserEntity, programState: ProgramaEntity? = uiState.value.program){
+        val program = repository.getProgram(user.nameId)
+        if(programState != program){
+            _uiState.update { state ->
+                state.copy(program = program)
+            }
+            loadTracks(user)
+        }
+        _uiState.update { state-> state.copy(loading = "LOAD") }
+    }
+    private suspend fun loadTracks(user: UserEntity){
+        val tracks = repository.getTracksUser(user.nameId)
+        _uiState.update { state-> state.copy(tracks = tracks) }
+    }
+
     private  fun loadState(){
         _uiState.update { estadoVazio ->
             estadoVazio.copy(
-                onShowSair = { show->
+                onShowEnd = { show->
                     _uiState.update {
-                        it.copy(showSair = !show)
+                        it.copy(showEnd = !show)
                     }
                 },
-                onGatilho = {gatilho ->
+                onTrigger = { gatilho ->
                     _uiState.update {
-                        it.copy(gatilho = gatilho)
+                        it.copy(trigger = gatilho)
                     }
                 }
             )
@@ -75,7 +89,7 @@ class HomeVM @Inject constructor(
         return Horas(now.hour.toLong(), now.minute.toLong(), now.second.toLong()).toMs()
     }
     fun checkAndUpdateProgramStatus(
-        program: ProgramaEntity? = uiState.value.programa,
+        program: ProgramaEntity? = uiState.value.program,
         now: Long = clockNowHoras())
     {
         program?.let {
@@ -91,9 +105,9 @@ class HomeVM @Inject constructor(
         }
     }
     fun trackNow(
-        program: ProgramaEntity? = uiState.value.programa,
-        track: TrackEntity? = uiState.value.musica,
-        listTracks: List<TrackEntity> = uiState.value.musicas,
+        program: ProgramaEntity? = uiState.value.program,
+        track: TrackEntity? = uiState.value.track,
+        listTracks: List<TrackEntity> = uiState.value.tracks,
         now :Long = clockNowHoras()
     ): Long{
         return if(track == null) {
@@ -101,10 +115,14 @@ class HomeVM @Inject constructor(
             discoverTrackPlaying(program, listTracks, now)
         }else {
             // nextTrack
-            nextTracks(track,listTracks)
+            nextTrack(track,listTracks)
         }
     }
-    private fun discoverTrackPlaying(program: ProgramaEntity?,listTracks: List<TrackEntity>, now: Long = clockNowHoras()): Long{
+    private fun discoverTrackPlaying(
+        program: ProgramaEntity? = uiState.value.program,
+        listTracks: List<TrackEntity> = uiState.value.tracks,
+        now: Long = clockNowHoras()
+    ): Long{
         var delay: Long = 0
         program?.let {
             var start = it.startTime
@@ -113,7 +131,7 @@ class HomeVM @Inject constructor(
                 start += t.duration
                 if(start >= now ){
                     _uiState.update { state->
-                        state.copy(musica = t)
+                        state.copy(track = t)
                     }
                     delay = start - now
                     break
@@ -123,25 +141,33 @@ class HomeVM @Inject constructor(
 
         return delay
     }
-    private fun nextTracks(track: TrackEntity,listTrack: List<TrackEntity>): Long{
+    private fun nextTrack(
+        track: TrackEntity = uiState.value.track!!,
+        listTrack: List<TrackEntity> = uiState.value.tracks
+    ): Long{
         if (track == listTrack.last()){
             _uiState.update { state->
-                state.copy(musica = null)
+                state.copy(track = null)
             }
             return 0
         }else {
             val next = listTrack[listTrack.indexOf(track) + 1]
-            _uiState.update { it.copy(musica = next) }
+            _uiState.update { it.copy(track = next) }
             return next.duration
         }
     }
+
+
     fun playTrack(track: TrackEntity?){
         track?.let {
             Spotify.tocar(track.uri)
             addQueue(track)
         }
     }
-    private fun addQueue(track: TrackEntity){
+    private fun addQueue(
+        track: TrackEntity? = uiState.value.track,
+        tracks: List<TrackEntity> = uiState.value.tracks
+    ){
         val x : Int = tracks.indexOf(track) + 1
         for(i in x until tracks.size){
             val uri = tracks[i].uri

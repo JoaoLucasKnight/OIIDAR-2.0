@@ -8,16 +8,16 @@ import com.example.oiidar.model.Horas
 
 data class HomeScreenUiState (
     val user: UserEntity? = null,
-    val programa: ProgramaEntity? = null,
-    val musicas: List<TrackEntity> = emptyList(),
-    val musica: TrackEntity? = null,
-    val loading: String = "load",
-    val showSair: Boolean = false,
-    val gatilho: Boolean = false,
+    val program: ProgramaEntity? = null,
+    val tracks: List<TrackEntity> = emptyList(),
+    val track: TrackEntity? = null,
+    val loading: String = "LOADING",
+    val showEnd: Boolean = false,
+    val trigger: Boolean = false,
     val status: Boolean = false,
-    val horas: Horas = Horas(0,0,0),
-    val onGatilho: (Boolean) -> Unit = {},
-    val onShowSair: (Boolean) -> Unit = {},
+    val hours: Horas = Horas(0,0,0),
+    val onTrigger: (Boolean) -> Unit = {},
+    val onShowEnd: (Boolean) -> Unit = {},
 )
 
 

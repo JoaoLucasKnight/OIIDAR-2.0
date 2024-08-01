@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.components.Body
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.NavBotton
@@ -31,7 +32,6 @@ fun Home(
 ){
     val viewModel: HomeVM = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
-
     viewModel.loading()
     Column (
         Modifier
@@ -39,53 +39,58 @@ fun Home(
             .fillMaxHeight()
             .padding(0.dp, 32.dp, 0.dp, 0.dp))
     {
-        if(state.loading == "load") {
-            viewModel.checkAndUpdateProgramStatus()
-            Scaffold(
-                topBar = {
-                    Header(
-                        img = state.user?.img,
-                        show = state.showSair,
-                        onShow = state.onShowSair,
-                        deslogar = { deslogar()}
-                    )
-                },
-                content = { innerPadding ->
-                    Body(
-                        pad = innerPadding,
-                        nav = navController,
-                        program = state.programa,
-                        status = state.status,
-                        musica = state.musica,
-                    )
-                },
-                bottomBar = {
-                    NavBotton(
-                        musica = state.musica,
-                        gatilho = state.gatilho,
-                        tocar = { track -> viewModel.playTrack(track) },
-                        onGatilho = { state.onGatilho(it) }
+        when(state.loading){
+            "LOAD" -> {
+                Scaffold(
+                    topBar = {
+                        Header(
+                            img = state.user?.img,
+                            show = state.showEnd,
+                            onShow = state.onShowEnd,
+                            deslogar = { deslogar()}
+                        )
+                    },
+                    content = { innerPadding ->
+                        Body(
+                            pad = innerPadding,
+                            nav = navController,
+                            program = state.program,
+                            status = state.status,
+                            musica = state.track,
+                        )
+                    },
+                    bottomBar = {
+                        NavBotton(
+                            musica = state.track,
+                            gatilho = state.trigger,
+                            tocar = { track -> viewModel.playTrack(track) },
+                            onGatilho = { state.onTrigger(it) }
 
-                    )
-                }
-            )
-            LaunchedEffect(key1 = state.status) {
-                Log.d("OIIDAR", "LauchedEffect ${state.status}")
-                if(state.status) {
-                    do{
-                        Log.d("OIIDAR", "Do ${state.status}")
-                        val ms = viewModel.trackNow()
-                        delay(ms)
-                    }while (ms != 0L)
-                }
+                        )
+                    }
+                )
+                LaunchedEffect(key1 = state) {
+                    viewModel.checkAndUpdateProgramStatus()
+                    Log.d("OIIDAR", "LauchedEffect ${state.status}")
+                    if(state.status) {
+                        do{
+                            Log.d("OIIDAR", "Do ${state.status}")
+                            val ms = viewModel.trackNow()
+                            delay(ms)
+                        }while (ms != 0L)
+                    }
 
+                }
             }
-        }else {
-            Surface{
-                Carregamento()
+            "LOADING" -> {
+                Surface{
+                    Carregamento()
+                }
+            }
+            "ERROR" -> {
+                navController.navigate(Destination.Login.route)
             }
         }
-
     }
 }
 

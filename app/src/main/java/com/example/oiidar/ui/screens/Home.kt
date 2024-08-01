@@ -71,15 +71,14 @@ fun Home(
                 )
                 LaunchedEffect(key1 = state) {
                     viewModel.checkAndUpdateProgramStatus()
-                    Log.d("OIIDAR", "LauchedEffect ${state.status}")
                     if(state.status) {
-                        do{
-                            Log.d("OIIDAR", "Do ${state.status}")
-                            val ms = viewModel.trackNow()
+                        var ms = viewModel.discoverTrackPlaying()
+                        delay(ms)
+                        while((ms != 0L ) and (state.track != null)){
+                            ms = viewModel.nextTrack()
                             delay(ms)
-                        }while (ms != 0L)
+                        }
                     }
-
                 }
             }
             "LOADING" -> {

@@ -22,9 +22,6 @@ import org.junit.rules.TestRule
 class HomeVMTest{
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
-
-
-
     private lateinit var repository: Repository
     private lateinit var vm: HomeVM
     private val track =
@@ -52,49 +49,37 @@ class HomeVMTest{
         }
     }
     @Test
-    fun test_trackNow_trackNull()= runBlocking {
-        val trackNull= null
+    fun test_discovery_nowEst()= runBlocking {
         val program = ProgramaEntity("", 10800000, 12000000)
-
-        val delay = vm.trackNow(program, trackNull, list, 10800000)
-
-        assertEquals(vm.uiState.value.track, track)
-        assertEquals(delay, 200000)
-    }
-    @Test
-    fun test_trackNow_trackNull_programEst()= runBlocking {
-        val trackNull= null
-        val program = ProgramaEntity("", 10800000, 12000000)
-
-        val delay = vm.trackNow(program, trackNull, list, 13000000)
+        val delay = vm.discoverTrackPlaying(program, list, 13000000)
 
         assertEquals(vm.uiState.value.track, null)
         assertEquals(delay, 0)
     }
     @Test
-    fun test_trackNow_trackNull_programEss()= runBlocking {
-        val trackNull= null
+    fun test_discovery_nowEss()= runBlocking {
         val program = ProgramaEntity("", 10800000, 12000000)
-
-        val delay = vm.trackNow(program, trackNull, list, 10700000)
+        val delay = vm.discoverTrackPlaying(program,  list, 10700000)
 
         assertEquals(vm.uiState.value.track, null)
         assertEquals(delay, 0)
     }
     @Test
-    fun test_trackNow_track()= runBlocking {
+    fun test_next_track()= runBlocking {
         val program = ProgramaEntity("", 10800000, 12000000)
+        vm.discoverTrackPlaying(program, list, 10800000)
 
-        val delay = vm.trackNow(program, track1, list, 10800000)
+        val delay = vm.nextTrack(listTrack = list)
 
-        assertEquals(vm.uiState.value.track, track2)
-        assertEquals(delay, 600000)
+        assertEquals(vm.uiState.value.track, track1)
+        assertEquals(delay, 400000)
     }
     @Test
     fun test_trackNow_lastTrack()= runBlocking {
         val program = ProgramaEntity("", 10800000, 12000000)
+        vm.discoverTrackPlaying(program, list, 11900000)
 
-        val delay = vm.trackNow(program, track2, list, 10800000)
+        val delay = vm.nextTrack(listTrack = list)
 
         assertEquals(vm.uiState.value.track, null)
         assertEquals(delay, 0)

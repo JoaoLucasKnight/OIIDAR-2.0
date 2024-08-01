@@ -104,21 +104,7 @@ class HomeVM @Inject constructor(
             }
         }
     }
-    fun trackNow(
-        program: ProgramaEntity? = uiState.value.program,
-        track: TrackEntity? = uiState.value.track,
-        listTracks: List<TrackEntity> = uiState.value.tracks,
-        now :Long = clockNowHoras()
-    ): Long{
-        return if(track == null) {
-            // discoverTrackPlaying
-            discoverTrackPlaying(program, listTracks, now)
-        }else {
-            // nextTrack
-            nextTrack(track,listTracks)
-        }
-    }
-    private fun discoverTrackPlaying(
+    fun discoverTrackPlaying(
         program: ProgramaEntity? = uiState.value.program,
         listTracks: List<TrackEntity> = uiState.value.tracks,
         now: Long = clockNowHoras()
@@ -141,7 +127,7 @@ class HomeVM @Inject constructor(
 
         return delay
     }
-    private fun nextTrack(
+    fun nextTrack(
         track: TrackEntity = uiState.value.track!!,
         listTrack: List<TrackEntity> = uiState.value.tracks
     ): Long{
@@ -156,8 +142,6 @@ class HomeVM @Inject constructor(
             return next.duration
         }
     }
-
-
     fun playTrack(track: TrackEntity?){
         track?.let {
             Spotify.tocar(track.uri)

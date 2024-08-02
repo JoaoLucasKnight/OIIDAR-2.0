@@ -1,14 +1,12 @@
 package com.example.oiidar.ui.viewModel
 
 
-import androidx.lifecycle.viewModelScope
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifySequence
-import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +21,7 @@ import org.junit.Test
 
 
 @ExperimentalCoroutinesApi
-class AuthVMTest {
+class MainViewModelTest {
     private val testDispatcher = Dispatchers.IO
     @Before
     fun setUp() { Dispatchers.setMain(testDispatcher) }
@@ -34,7 +32,7 @@ class AuthVMTest {
         val user = UserEntity("nome", "email",true)
         val userNull: UserEntity? = null
         val repository = mockk<Repository>(relaxed = true)
-        val viewModel = AuthVM(repository)
+        val viewModel = MainViewModel(repository)
 
         coEvery { repository.userLogIn() } returns user
         coEvery { repository.getSpotifyUser() } returns user
@@ -61,7 +59,7 @@ class AuthVMTest {
     fun checkSaveOrSave_True()= runTest {
         val user = UserEntity("nome", "email",true)
         val repository = mockk<Repository>(relaxed = true)
-        val viewModel = AuthVM(repository)
+        val viewModel = MainViewModel(repository)
 
         coEvery { repository.userLogIn() } returns user
         coEvery { repository.getSpotifyUser() } returns user
@@ -83,7 +81,7 @@ class AuthVMTest {
     @Test
     fun checkSaveOrSave_Exception()= runTest {
         val repository = mockk<Repository>(relaxed = true)
-        val viewModel = AuthVM(repository)
+        val viewModel = MainViewModel(repository)
 
         coEvery { repository.userLogIn() } returns null
         coEvery { repository.getSpotifyUser() } throws Exception("Requisição falhou")
@@ -104,7 +102,7 @@ class AuthVMTest {
     @Test
     fun checkSaveOrSave_Exception2()= runTest {
         val repository = mockk<Repository>(relaxed = true)
-        val viewModel = AuthVM(repository)
+        val viewModel = MainViewModel(repository)
         val user = UserEntity("nome", "email",true)
 
         coEvery { repository.userLogIn() } returns null

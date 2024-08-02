@@ -1,22 +1,18 @@
 package com.example.oiidar.ui.viewModel
 
 
-import com.example.oiidar.model.Images
 import com.example.oiidar.model.SpotifyPlaylist
-import com.example.oiidar.model.Tracks
 import com.example.oiidar.repositories.Repository
-import com.example.oiidar.ui.uiStates.ProgramaUiState
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 
 import org.junit.Test
 
 
-class ProgramacaoVMTest{
+class ProgramViewModelTest{
     private val repository = mockk<Repository>()
-    private val vm = ProgramacaoVM(repository)
+    private val vm = ProgramViewModel(repository)
     @Test
     fun testSearchAndSave()=runTest {
         val idPlaylist= "id test"

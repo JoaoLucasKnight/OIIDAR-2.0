@@ -1,6 +1,5 @@
 package com.example.oiidar.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 
 import androidx.compose.foundation.layout.Box
@@ -8,17 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,19 +24,16 @@ import androidx.navigation.NavController
 import com.example.oiidar.R
 import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.theme.OIIDARTheme
-import com.example.oiidar.ui.viewModel.AuthVM
-import com.spotify.sdk.android.auth.AuthorizationResponse
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.oiidar.ui.viewModel.MainViewModel
 
 
 @Composable
-fun Logar(
-    vm: AuthVM,
+fun Login(
+    viewModel: MainViewModel,
     authInit: () -> Unit,
     navController: NavController
 ){
-    val user by vm.user.collectAsState()
+    val user by  viewModel.user.collectAsState()
     Surface(
         modifier = Modifier.fillMaxWidth()
     ) {

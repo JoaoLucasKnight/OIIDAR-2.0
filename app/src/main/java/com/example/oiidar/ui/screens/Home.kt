@@ -1,6 +1,5 @@
 package com.example.oiidar.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +19,7 @@ import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.components.Body
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.NavBotton
-import com.example.oiidar.ui.viewModel.HomeVM
+import com.example.oiidar.ui.viewModel.HomeViewModel
 import kotlinx.coroutines.delay
 
 
@@ -28,9 +27,9 @@ import kotlinx.coroutines.delay
 @ExperimentalMaterial3Api
 fun Home(
     navController : NavController,
-    deslogar : () -> Unit
+    logOut : () -> Unit
 ){
-    val viewModel: HomeVM = hiltViewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
     viewModel.loading()
     Column (
@@ -47,7 +46,7 @@ fun Home(
                             img = state.user?.img,
                             show = state.showEnd,
                             onShow = state.onShowEnd,
-                            deslogar = { deslogar()}
+                            deslogar = { logOut() }
                         )
                     },
                     content = { innerPadding ->
@@ -83,11 +82,15 @@ fun Home(
             }
             "LOADING" -> {
                 Surface{
-                    Carregamento()
+                    LoadingScreen()
                 }
             }
             "ERROR" -> {
-                navController.navigate(Destination.Login.route)
+                ErrorScreen()
+                LaunchedEffect(key1 = Unit) {
+                    delay(1500)
+                    navController.navigate(Destination.Login.route)
+                }
             }
         }
     }

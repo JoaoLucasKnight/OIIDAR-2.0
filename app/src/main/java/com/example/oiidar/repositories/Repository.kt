@@ -61,6 +61,7 @@ class Repository @Inject constructor(
     }
     suspend fun updateStartProgram(start: Long, id: String){
         dao.updateStartDuration(start, id)
+        updateProgram(id)
     }
 
 
@@ -103,7 +104,7 @@ class Repository @Inject constructor(
     }
 
 
-    // --------- Logic ---------ProgramacaoVM
+    // --------- Logic ---------ProgramViewModel
     suspend fun searchAndSave(idPlaylist: String, idUser: String){
         val spotifyPlaylist = responsePlaylist(idPlaylist)
         var duration: Long = 0
@@ -132,7 +133,7 @@ class Repository @Inject constructor(
         updateFinishProgram(duration, program)
     }
 
-    // --------- Logic --------- AuthVM
+    // --------- Logic --------- MainViewModel
 
 }
 

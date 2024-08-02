@@ -4,13 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oiidar.conectionApi.Spotify
+import com.example.oiidar.contantes.TAG
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.model.Horas
 import com.example.oiidar.convertType.toMs
 import com.example.oiidar.repositories.Repository
-import com.example.oiidar.ui.uiStates.HomeScreenUiState
+import com.example.oiidar.ui.uiStates.HomeState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,11 +22,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
+
 @HiltViewModel
-class HomeVM @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val repository: Repository,
 ):ViewModel() {
-    private val _uiState = MutableStateFlow(HomeScreenUiState())
+    private val _uiState = MutableStateFlow(HomeState())
     val uiState = _uiState.asStateFlow()
     init { loadState() }
     fun loading(){
@@ -39,7 +41,7 @@ class HomeVM @Inject constructor(
                 }
             }catch (e: Exception){
                 _uiState.update { state-> state.copy(loading = "ERROR") }
-                Log.i("OIIDAR", "loading: ${e.message}")
+                Log.i(TAG, "loading: ${e.message}")
             }
         }
     }
@@ -50,7 +52,7 @@ class HomeVM @Inject constructor(
             loadProgram(it)
         }?: run {
             _uiState.update { state-> state.copy(loading = "ERROR") }
-            Log.i("OIIDAR", "loading: user == null")
+            Log.i(TAG, "loading: user == null")
         }
     }
     private suspend fun loadProgram(user: UserEntity, programState: ProgramaEntity? = uiState.value.program){
@@ -69,16 +71,16 @@ class HomeVM @Inject constructor(
     }
 
     private  fun loadState(){
-        _uiState.update { estadoVazio ->
-            estadoVazio.copy(
+        _uiState.update { stateInitial ->
+            stateInitial.copy(
                 onShowEnd = { show->
                     _uiState.update {
                         it.copy(showEnd = !show)
                     }
                 },
-                onTrigger = { gatilho ->
+                onTrigger = { trigger ->
                     _uiState.update {
-                        it.copy(trigger = gatilho)
+                        it.copy(trigger = trigger)
                     }
                 }
             )

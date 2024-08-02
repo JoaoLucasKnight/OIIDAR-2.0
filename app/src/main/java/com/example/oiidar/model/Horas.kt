@@ -1,12 +1,19 @@
 package com.example.oiidar.model
 
+import android.annotation.SuppressLint
+
 class Horas(
-    val horas: Long,
-    val minutos: Long,
-    val segundos: Long
+    val hour: Long = 0,
+    val minute: Long = 0,
+    val second: Long = 0
 ){
+    @SuppressLint("DefaultLocale")
+    fun stringWithSeconds(): String {
+        return String.format("%02d:%02d:%02d", hour, minute, second)
+    }
+    @SuppressLint("DefaultLocale")
     override fun toString(): String {
-        return String.format("%02d:%02d", horas, minutos)
+        return String.format("%02d:%02d", hour, minute)
     }
 }
 

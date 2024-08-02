@@ -1,6 +1,5 @@
 package com.example.oiidar.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,15 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.oiidar.convertType.toHoras
 import com.example.oiidar.database.entities.PlaylistEntity
 import com.example.oiidar.ui.theme.OIIDARTheme
-import com.example.oiidar.ui.viewModel.ProgramacaoVM
 
 
 @Composable
 fun Playlists(
     lista: List<PlaylistEntity>,
-    conversor: (Long) -> String,
     apagaPlaylist: (String) -> Unit
 ){
     LazyColumn(
@@ -36,7 +34,7 @@ fun Playlists(
                 ListItem(
                     headlineContent = { Text(playlist.name) },
                     overlineContent = { Text("PLAYLIST") },
-                    supportingContent = { Text(conversor(playlist.duration)) },
+                    supportingContent = { Text(playlist.duration.toHoras(playlist.duration).toString()) },
                     leadingContent = {
                         AsyncImage(
                             model = playlist.img,

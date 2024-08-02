@@ -42,7 +42,7 @@ fun Clock(
         }
 
         Text(
-            text = String.format("%02d:%02d:%02d", horas.horas, horas.minutos, horas.segundos),
+            text = String.format("%02d:%02d:%02d", horas.hour, horas.minute, horas.second),
             modifier = Modifier.align(Alignment.Center),
             style = MaterialTheme.typography.displayLarge,
         )

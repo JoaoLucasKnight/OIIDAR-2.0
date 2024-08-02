@@ -19,11 +19,11 @@ import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.rules.TestRule
 
-class HomeVMTest{
+class HomeViewModelTest{
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
     private lateinit var repository: Repository
-    private lateinit var vm: HomeVM
+    private lateinit var vm: HomeViewModel
     private val track =
         TrackEntity("play","id", "name", "img", "uri", 200000)
     private val track1 =
@@ -34,7 +34,7 @@ class HomeVMTest{
     @Before
     fun setup() {
         repository = mockk()
-        vm = HomeVM(repository)
+        vm = HomeViewModel(repository)
     }
     @Test
     fun test_checkAndUpdateProgramStatus()= runBlocking {
@@ -42,7 +42,7 @@ class HomeVMTest{
         val program = ProgramaEntity("", 10800000, 18592912)
         val nowValues: List<Long> = listOf(10800000, 18592912, 15151515)
         val repository = mockk<Repository>()
-        val vm = HomeVM(repository)
+        val vm = HomeViewModel(repository)
         for (now in nowValues){
             vm.checkAndUpdateProgramStatus(program, now)
             assertEquals(vm.uiState.value.status, true)
@@ -90,7 +90,7 @@ class HomeVMTest{
     fun test_loading()= runBlocking{
         Dispatchers.setMain(Dispatchers.IO)
         val repos = mockk<Repository>()
-        val viewModel = HomeVM(repos)
+        val viewModel = HomeViewModel(repos)
         val user= UserEntity("id", "img", true)
         val program = ProgramaEntity("id", 10800000, 12000000)
         val list = mockk<List<TrackEntity>>(relaxed = true)

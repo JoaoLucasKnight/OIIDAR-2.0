@@ -15,16 +15,17 @@ import com.example.oiidar.authenticator.TokenProvider
 import com.example.oiidar.conectionApi.Spotify
 import com.example.oiidar.contantes.CLIENT_ID
 import com.example.oiidar.contantes.REDIRECT_URI
+import com.example.oiidar.contantes.TAG
 import com.example.oiidar.navigation.OiidarNavHost
 import com.example.oiidar.ui.theme.OIIDARTheme
-import com.example.oiidar.ui.viewModel.AuthVM
+import com.example.oiidar.ui.viewModel.MainViewModel
 import com.spotify.sdk.android.auth.AuthorizationClient
 import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-const val TAG = "OIIDAR"
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,21 +34,19 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var authRes: ActivityResultLauncher<Intent>
 
-    private val vm: AuthVM by viewModels()
+    private val viewModel: MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         authRes = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val response = AuthorizationClient.getResponse(result.resultCode, result.data)
-
             when (response.type) {
                 AuthorizationResponse.Type.TOKEN -> {
                     val accessToken = response.accessToken
-                    Log.d("OIIDAR", "Access Token: $accessToken")
                     tokenProvider.setToken(accessToken)
-                    vm.checkSaveOrSave()
+                    viewModel.checkSaveOrSave()
                 }
-                AuthorizationResponse.Type.ERROR -> { Log.e("OIIDAR", "Error: ${response.error}") }
-                else -> { Log.d("OIIDAR", "Auth result: ${response.type}") }
+                AuthorizationResponse.Type.ERROR -> { Log.e(TAG, "Error: ${response.error}") }
+                else -> { Log.d(TAG, "Auth result: ${response.type}") }
             }
         }
         enableEdgeToEdge()
@@ -55,17 +54,15 @@ class MainActivity : ComponentActivity() {
             OIIDARTheme {
                 val navController = rememberNavController()
                 OiidarNavHost(
-                    vm = vm,
+                    viewModel = viewModel,
                     navController = navController,
                     authInit = { authInit(authRes, this) }
                 )
             }
         }
-
-
     }
     private fun authInit(launcher: ActivityResultLauncher<Intent> ,activity: Activity){
-        Log.d("OIIDAR", "authInit")
+        Log.d(TAG, "authInit")
         val builder: AuthorizationRequest.Builder = AuthorizationRequest
             .Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI)
             .setScopes(arrayOf("user-read-private", "user-read-email"))

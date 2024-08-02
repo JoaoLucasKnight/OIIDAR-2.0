@@ -23,7 +23,7 @@ fun TimerEditorDialog(
     salvar: (Horas) -> Unit = {}
 
 ) {
-    val state = rememberTimePickerState( time.horas.toInt(), time.minutos.toInt(), true)
+    val state = rememberTimePickerState( time.hour.toInt(), time.minute.toInt(), true)
 
     AlertDialog (
         title = { Text("Editar", style = MaterialTheme.typography.labelMedium) },

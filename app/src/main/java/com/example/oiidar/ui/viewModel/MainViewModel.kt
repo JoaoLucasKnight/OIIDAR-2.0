@@ -3,18 +3,16 @@ package com.example.oiidar.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.oiidar.convertType.toUser
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthVM @Inject constructor(
+class MainViewModel @Inject constructor(
     private val repository: Repository
 ): ViewModel(){
     init {
@@ -23,7 +21,7 @@ class AuthVM @Inject constructor(
     private val _user = MutableStateFlow<UserEntity?>(null)
     val user = _user.asStateFlow()
     fun checkSaveOrSave(){
-        viewModelScope.launch() {
+        viewModelScope.launch {
             try {
                 val res =repository.getSpotifyUser()
                 val check = repository.checkUserSave(res.nameId)
@@ -37,10 +35,9 @@ class AuthVM @Inject constructor(
                 e.printStackTrace()
             }
         }
-
     }
     private fun checkLogIn(){
-        viewModelScope.launch() {
+        viewModelScope.launch {
             val result = repository.userLogIn()
             _user.value = result
         }
@@ -57,7 +54,6 @@ class AuthVM @Inject constructor(
         }catch (e: Exception){
             rollback(user,useFlag, programFlag)
             e.printStackTrace()
-
         }
     }
     private suspend fun rollback(userEntity: UserEntity,user: Boolean,program: Boolean){

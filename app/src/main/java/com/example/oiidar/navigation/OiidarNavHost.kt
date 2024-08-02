@@ -4,61 +4,54 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.oiidar.ui.screens.Home
-import com.example.oiidar.ui.screens.Logar
-import com.example.oiidar.ui.screens.Programacao
-import com.example.oiidar.ui.viewModel.AuthVM
-import com.example.oiidar.ui.viewModel.HomeVM
-import com.example.oiidar.ui.viewModel.ProgramacaoVM
+import com.example.oiidar.ui.screens.Login
+import com.example.oiidar.ui.screens.Program
+import com.example.oiidar.ui.viewModel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 import kotlin.system.exitProcess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OiidarNavHost(
-    vm: AuthVM,
+    viewModel: MainViewModel,
     navController: NavHostController,
     authInit: () -> Unit = {},
 ){
-    val user by vm.user.collectAsState()
-    val coroutineScope = CoroutineScope(Dispatchers.IO)
-
-
+    val user by viewModel.user.collectAsState()
+    val coroutineScope = CoroutineScope(Dispatchers.Main)
     NavHost(
         navController = navController,
-        startDestination = Destination.Login.route
+        startDestination = Destination.Home.route
     ){
         composable(Destination.Login.route) {
-            Logar(
-                vm = vm,
+            Login(
+                viewModel = viewModel,
                 authInit = { authInit() },
                 navController = navController
             )
         }
         composable(Destination.Home.route) {
             Home( navController = navController,
-                deslogar = {
+                logOut = {
                     coroutineScope.launch {
-                        vm.updateStatusUser(false, user?.nameId!!)
+                        viewModel.updateStatusUser(false, user?.nameId!!)
                         exitProcess(0)
                     }
                 }
             )
         }
         composable(Destination.Prog.route) {
-            val viewModel: ProgramacaoVM = hiltViewModel()
-            Programacao(
-                viewModel = viewModel,
-                deslogar = {
+            Program(
+                navController = navController,
+                logOut = {
                     coroutineScope.launch {
-                        vm.updateStatusUser(false, user?.nameId!!)
+                        viewModel.updateStatusUser(false, user?.nameId!!)
                         exitProcess(0)
                     }
                 }

@@ -36,7 +36,7 @@ fun Track.toTrackEntity(idPlayist: String): TrackEntity {
     )
 }
 fun Horas.toMs(): Long{
-    return horas * 3600000 + minutos * 60000 + segundos * 1000
+    return hour * 3600000 + minute * 60000 + second * 1000
 }
 fun Long.toHoras(ms: Long): Horas {
     val second = (ms  / 1000) % 60

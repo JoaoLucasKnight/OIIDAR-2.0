@@ -51,7 +51,7 @@ fun Login(
                         .align(Alignment.BottomStart)
                 )
             }
-            Box {
+            Box {           
                 Column(
                     modifier = Modifier
                         .padding(32.dp, 16.dp)
@@ -75,14 +75,11 @@ fun Login(
                         if (user != null){
                             navController.navigate(Destination.Home.route)
                         }
-
                     }
                 }
             }
         }
-
     }
-
 }
 @Preview(showSystemUi = true)
 @Composable

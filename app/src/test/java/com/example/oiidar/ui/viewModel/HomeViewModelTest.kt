@@ -22,8 +22,10 @@ import org.junit.rules.TestRule
 class HomeViewModelTest{
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
+
     private lateinit var repository: Repository
     private lateinit var vm: HomeViewModel
+
     private val track =
         TrackEntity("play","id", "name", "img", "uri", 200000)
     private val track1 =

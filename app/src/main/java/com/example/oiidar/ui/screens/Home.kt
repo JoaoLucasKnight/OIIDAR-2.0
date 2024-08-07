@@ -31,7 +31,7 @@ fun Home(
 ){
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
-    viewModel.loading()
+
     Column (
         Modifier
             .fillMaxWidth()
@@ -83,6 +83,7 @@ fun Home(
             "LOADING" -> {
                 Surface{
                     LoadingScreen()
+                    viewModel.loading()
                 }
             }
             "ERROR" -> {

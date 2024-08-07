@@ -116,6 +116,7 @@ fun Program(
                             keyboardActions = KeyboardActions(
                                 onSearch = {
                                     viewModel.searchAndSave(state.url)
+                                    viewModel.loading()
                                     focusManager.clearFocus()
                                 }
                             )
@@ -126,7 +127,10 @@ fun Program(
                         )
                         Playlists(
                             lista = state.listPlaylist,
-                            apagaPlaylist = { playlist -> viewModel.removePlaylist(playlist) }
+                            apagaPlaylist = { playlist ->
+                                viewModel.removePlaylist(playlist)
+                                viewModel.loading()
+                            }
                         )
                         Row (
                             modifier = Modifier
@@ -166,6 +170,7 @@ fun Program(
                     time = startHour,
                     salvar = { horas ->
                         viewModel.updateStartProgram(horas.toMs())
+                        viewModel.loading()
                         state.onShowTimer(false)
                     }
                 )

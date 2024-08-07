@@ -16,7 +16,7 @@ import com.example.oiidar.conectionApi.Spotify
 import com.example.oiidar.contantes.CLIENT_ID
 import com.example.oiidar.contantes.REDIRECT_URI
 import com.example.oiidar.contantes.TAG
-import com.example.oiidar.navigation.OiidarNavHost
+import com.example.oiidar.navigation.NavHost
 import com.example.oiidar.ui.theme.OIIDARTheme
 import com.example.oiidar.ui.viewModel.MainViewModel
 import com.spotify.sdk.android.auth.AuthorizationClient
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             OIIDARTheme {
                 val navController = rememberNavController()
-                OiidarNavHost(
+                NavHost(
                     viewModel = viewModel,
                     navController = navController,
                     authInit = { authInit(authRes, this) }

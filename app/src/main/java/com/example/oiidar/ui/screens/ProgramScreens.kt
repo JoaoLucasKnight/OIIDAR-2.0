@@ -42,13 +42,13 @@ import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.viewModel.ProgramViewModel
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.Playlists
-import com.example.oiidar.ui.dialogs.TimerEditorDialog
+import com.example.oiidar.ui.dialogs.TimerEditDialog
 import com.example.oiidar.ui.theme.OIIDARTheme
 import kotlinx.coroutines.delay
 
 @Composable
 @ExperimentalMaterial3Api
-fun Program(
+fun ProgramScreens(
     navController: NavController,
     logOut: () -> Unit
 ){
@@ -165,7 +165,7 @@ fun Program(
                 }
             )
             if (state.showTimer) {
-                TimerEditorDialog(
+                TimerEditDialog(
                     onDismissRequest = { state.onShowTimer(false) },
                     time = startHour,
                     salvar = { horas ->
@@ -185,7 +185,7 @@ fun Program(
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-private fun ProgramacaoPreview(){
+private fun ProgramPreview(){
     OIIDARTheme {
         Surface {
         }

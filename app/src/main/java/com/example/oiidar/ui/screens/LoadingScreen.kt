@@ -44,7 +44,7 @@ fun LoadingScreen(){
 
 @Composable
 @Preview
-fun CarregamentoPreview(){
+fun LoadingScreenPreview(){
     OIIDARTheme {
         Surface {
             LoadingScreen()

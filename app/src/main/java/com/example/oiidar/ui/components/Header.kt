@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.oiidar.R
-import com.example.oiidar.ui.dialogs.SaidaDialog
+import com.example.oiidar.ui.dialogs.LogOutDialog
 import com.example.oiidar.ui.theme.OIIDARTheme
 
 @Composable
@@ -48,7 +48,7 @@ fun Header(
         }
     }
     if (show) {
-        SaidaDialog(
+        LogOutDialog(
             onDismissRequest = { onShow(show) },
             onConfirmation = { deslogar() }
         )

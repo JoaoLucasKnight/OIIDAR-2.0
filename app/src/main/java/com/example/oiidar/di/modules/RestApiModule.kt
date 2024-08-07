@@ -55,7 +55,7 @@ object RestApiModule {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
-            .build()
+        .build()
     }
 
     @Provides

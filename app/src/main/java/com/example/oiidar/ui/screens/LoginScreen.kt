@@ -28,7 +28,7 @@ import com.example.oiidar.ui.viewModel.MainViewModel
 
 
 @Composable
-fun Login(
+fun LoginScreen(
     viewModel: MainViewModel,
     authInit: () -> Unit,
     navController: NavController

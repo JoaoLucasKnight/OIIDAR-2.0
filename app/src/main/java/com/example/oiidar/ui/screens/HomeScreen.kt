@@ -25,7 +25,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 @ExperimentalMaterial3Api
-fun Home(
+fun HomeScreen(
     navController : NavController,
     logOut : () -> Unit
 ){

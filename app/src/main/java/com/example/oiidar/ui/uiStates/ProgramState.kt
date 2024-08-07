@@ -8,7 +8,6 @@ data class ProgramState(
     val user: UserEntity? = null,
     val program: ProgramaEntity? = null,
     val listPlaylist: List<PlaylistEntity> = emptyList(),
-    val playlist: PlaylistEntity? = null,
     val loading: String = "LOADING",
     val showEnd: Boolean = false,
     val showTimer: Boolean = false,

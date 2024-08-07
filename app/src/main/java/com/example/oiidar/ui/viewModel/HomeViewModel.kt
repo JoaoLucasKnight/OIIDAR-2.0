@@ -30,6 +30,8 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeState())
     val uiState = _uiState.asStateFlow()
     init { loadState() }
+
+    //Todo separar logica dentro do user
     fun loading(){
         viewModelScope.launch {
             try {

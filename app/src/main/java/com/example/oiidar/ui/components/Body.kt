@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,7 +25,6 @@ import com.example.oiidar.convertType.toHoras
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.navigation.Destination
-import kotlinx.coroutines.delay
 
 @Composable
 fun Body(
@@ -73,7 +71,7 @@ fun Body(
 
             }
             OutlinedButton(
-                onClick = { nav.navigate(Destination.Prog.route) },
+                onClick = { nav.navigate(Destination.Program.route) },
                 modifier = Modifier
                     .padding(0.dp, 16.dp)
                     .align(Alignment.CenterHorizontally),

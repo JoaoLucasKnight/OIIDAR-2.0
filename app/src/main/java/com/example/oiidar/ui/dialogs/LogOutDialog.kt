@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.oiidar.ui.theme.OIIDARTheme
 
 @Composable
-fun SaidaDialog(
+fun LogOutDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
 ){

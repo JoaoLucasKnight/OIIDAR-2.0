@@ -17,7 +17,7 @@ import com.example.oiidar.ui.theme.OIIDARTheme
 
 @Composable
 @ExperimentalMaterial3Api
-fun TimerEditorDialog(
+fun TimerEditDialog(
     onDismissRequest: () -> Unit,
     time: Horas,
     salvar: (Horas) -> Unit = {}

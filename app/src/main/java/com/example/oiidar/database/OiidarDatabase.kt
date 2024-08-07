@@ -1,8 +1,7 @@
 package com.example.oiidar.database
 
-import android.content.Context
+
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.oiidar.database.dao.Dao
 import com.example.oiidar.database.entities.PlaylistEntity

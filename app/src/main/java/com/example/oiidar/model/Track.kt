@@ -11,9 +11,7 @@ data class Track(
     val name: String,
     val type: String,
     val uri: String
-){
-
-}
+)
 
 
 

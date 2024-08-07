@@ -1,20 +1,18 @@
 package com.example.oiidar.repositories
 
 import android.util.Log
+import com.example.oiidar.contantes.TAG
 import com.example.oiidar.convertType.toPlaylist
 import com.example.oiidar.database.dao.Dao
 import com.example.oiidar.database.entities.PlaylistEntity
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
-import com.example.oiidar.model.TrackItens
 import com.example.oiidar.convertType.toTrackEntity
 import com.example.oiidar.convertType.toUser
 import com.example.oiidar.model.SpotifyPlaylist
-import com.example.oiidar.model.SpotifyUser
 import com.example.oiidar.net.service.PlaylistService
 import com.example.oiidar.net.service.UserService
-
 import javax.inject.Inject
 
 
@@ -40,7 +38,7 @@ class Repository @Inject constructor(
         dao.updateStatus(status, user)
     }
     suspend fun getSpotifyUser(): UserEntity{
-        Log.d("OIIDAR", api.getUser().toString())
+        Log.d(TAG, api.getUser().toString())
         return api.getUser().toUser()
     }// TODO request Api test
 
@@ -56,7 +54,7 @@ class Repository @Inject constructor(
     suspend fun saveProgram(entity: UserEntity){
         dao.saveProgram(ProgramaEntity(entity.nameId))
     }
-    suspend fun updateFinishProgram(duration: Long, program: ProgramaEntity){
+    private suspend fun updateFinishProgram(duration: Long, program: ProgramaEntity){
         dao.updateFinishDuration(duration, program.id)
     }
     suspend fun updateStartProgram(start: Long, id: String){
@@ -78,7 +76,7 @@ class Repository @Inject constructor(
     suspend fun deletePlaylist(entity: PlaylistEntity) {
         dao.deletePlaylist(entity)
     }
-    suspend fun responsePlaylist(idPlaylist: String): SpotifyPlaylist{
+    private suspend fun responsePlaylist(idPlaylist: String): SpotifyPlaylist{
         return playApi.getPlaylist(idPlaylist)
     }// TODO request Api test
 

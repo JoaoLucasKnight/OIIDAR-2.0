@@ -32,6 +32,7 @@ fun HomeScreen(
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
 
+    viewModel.loading()
     Column (
         Modifier
             .fillMaxWidth()

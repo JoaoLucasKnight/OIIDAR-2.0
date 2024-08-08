@@ -83,6 +83,8 @@ class ProgramViewModelTest{
 
         coEvery { repository.removePlaylistAndTrack(any()) } just Runs
         coEvery { repository.updateProgram(any()) } just Runs
+        coEvery { repository.getProgram(any()) } returns program
+        coEvery { repository.getPlaylists(any()) } returns listPlaylist
 
         vm.removePlaylist("idPlaylist", user)
 

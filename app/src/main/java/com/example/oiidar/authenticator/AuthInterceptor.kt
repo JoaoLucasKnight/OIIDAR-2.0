@@ -1,6 +1,5 @@
 package com.example.oiidar.authenticator
 
-import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 

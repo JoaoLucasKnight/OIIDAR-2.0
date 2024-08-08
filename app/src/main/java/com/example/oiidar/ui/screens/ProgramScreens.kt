@@ -116,7 +116,6 @@ fun ProgramScreens(
                             keyboardActions = KeyboardActions(
                                 onSearch = {
                                     viewModel.searchAndSave(state.url)
-                                    viewModel.loading()
                                     focusManager.clearFocus()
                                 }
                             )
@@ -129,7 +128,6 @@ fun ProgramScreens(
                             lista = state.listPlaylist,
                             apagaPlaylist = { playlist ->
                                 viewModel.removePlaylist(playlist)
-                                viewModel.loading()
                             }
                         )
                         Row (
@@ -144,7 +142,7 @@ fun ProgramScreens(
                                 style = MaterialTheme.typography.headlineSmall
                             )
                             OutlinedButton(
-                                onClick = { state.onShowTimer(state.showTimer)}
+                                onClick = { state.onShowTimer(true)}
                             ) {
                                 Text(
                                     text = startHour.toString(),
@@ -170,7 +168,7 @@ fun ProgramScreens(
                     time = startHour,
                     salvar = { horas ->
                         viewModel.updateStartProgram(horas.toMs())
-                        viewModel.loading()
+
                         state.onShowTimer(false)
                     }
                 )
@@ -178,10 +176,6 @@ fun ProgramScreens(
         }
     }
 }
-
-
-
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api

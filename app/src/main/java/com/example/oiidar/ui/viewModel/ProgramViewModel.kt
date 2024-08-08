@@ -7,6 +7,7 @@ import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
 import com.example.oiidar.ui.uiStates.ProgramState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -65,6 +66,7 @@ class ProgramViewModel @Inject constructor(
                 try {
                     repository.searchAndSave(idPlaylist,user.nameId)
                     repository.updateProgram(user.nameId)
+                    loading(user)
                 } catch (e: Exception){
                     e.printStackTrace()
                     passState("ERROR")
@@ -79,6 +81,7 @@ class ProgramViewModel @Inject constructor(
                 try {
                     repository.removePlaylistAndTrack(idPlaylist)
                     repository.updateProgram(user.nameId)
+                    loading(user)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     passState("ERROR")
@@ -91,6 +94,7 @@ class ProgramViewModel @Inject constructor(
             user?.let { user ->
                 try {
                     repository.updateStartProgram(ms, user.nameId)
+                    loading(user)
                 }
                 catch (e: Exception){
                     passState("ERROR")

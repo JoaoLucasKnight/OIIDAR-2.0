@@ -49,18 +49,14 @@ class MainViewModelTest {
         val userNull: UserEntity? = null
         coEvery { repository.getSpotifyUser() } returns user
         coEvery { repository.checkUserSave(any()) } returns userNull
-        coEvery { repository.saveUser(any()) } just Runs
-        coEvery { repository.saveProgram(any()) } just Runs
-        coEvery { repository.updateStatusUser(true,user.nameId) } just Runs
+        coEvery { repository.saveUserAndProgram(any()) } just Runs
 
         viewModel.checkSaveOrSave()
 
         coVerifySequence{
             repository.getSpotifyUser()
             repository.checkUserSave(any())
-            repository.saveUser(any())
-            repository.saveProgram(any())
-            repository.updateStatusUser(true, "nome")
+            repository.saveUserAndProgram(any())
         }
         assertEquals(viewModel.user.value, user)
     }
@@ -68,24 +64,20 @@ class MainViewModelTest {
     fun checkSaveOrSave_True()= runTest {
         coEvery { repository.getSpotifyUser() } returns user
         coEvery { repository.checkUserSave(any()) } returns user
-        coEvery { repository.updateStatusUser(true, user.nameId) } just Runs
+        coEvery { repository.updateStatusUser(any(),any()) } just Runs
 
         viewModel.checkSaveOrSave()
 
         coVerifySequence{
             repository.getSpotifyUser()
             repository.checkUserSave(any())
-            repository.updateStatusUser(true, "nome")
+            repository.updateStatusUser(any(),any())
         }
         assertEquals(viewModel.user.value, user)
     }
     @Test
     fun checkSaveOrSave_Exception()= runTest {
         coEvery { repository.getSpotifyUser() } throws Exception("Requisição falhou")
-        coEvery { repository.checkUserSave(any()) } returns null
-        coEvery { repository.saveUser(any()) } just Runs
-        coEvery { repository.saveProgram(any()) } just Runs
-        coEvery { repository.updateStatusUser(any(),any()) } just Runs
 
         viewModel.checkSaveOrSave()
 

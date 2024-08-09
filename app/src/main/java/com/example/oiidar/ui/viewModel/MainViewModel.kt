@@ -31,11 +31,13 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val res =repository.getSpotifyUser()
-                val check = repository.checkUserSave(res.nameId)
+                val check = repository.checkUserSave(res)
                 if (check != null) {
-                    updateStatusUser(true, res)
+                    repository.updateStatusUser(true, res)
+                    _user.value = res
                 }else{
-                    saveUserAndProgram(res)
+                    repository.saveUserAndProgram(res)
+                    _user.value = res
                 }
             }catch (e: Exception){
                 e.printStackTrace()
@@ -44,23 +46,7 @@ class MainViewModel @Inject constructor(
     }
     fun getAuth(res: Boolean){ _auth.value = res }
 
-    private suspend fun saveUserAndProgram(user: UserEntity){
-        repository.saveUser(user)
-        repository.saveProgram(user)
-        updateStatusUser(true,user)
-    }
-    private suspend fun updateStatusUser(status: Boolean,user: UserEntity){
-        repository.updateStatusUser(status ,user.nameId)
-        _user.value = user
-    }
-    fun logout(){
-        viewModelScope.launch {
-            try { repository.updateStatusUser(false,user.value!!.nameId)
-            }catch (e: Exception){ e.printStackTrace() }
-        }
-    }
 }
-
 
 //    private suspend fun rollback(userEntity: UserEntity,user: Boolean,program: Boolean){
 //        try{

@@ -35,21 +35,10 @@ fun NavHost(
             )
         }
         composable(Destination.Home.route) {
-            HomeScreen( navController = navController,
-                logOut = {
-                    viewModel.logout()
-                    navController.navigate(Destination.Login.route)
-                }
-            )
+            HomeScreen( navController = navController)
         }
         composable(Destination.Program.route) {
-            ProgramScreens(
-                navController = navController,
-                logOut = {
-                    viewModel.logout()
-                    navController.navigate(Destination.Login.route)
-                }
-            )
+            ProgramScreens(navController = navController)
         }
     }
 }

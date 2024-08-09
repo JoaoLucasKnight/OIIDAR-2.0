@@ -22,23 +22,19 @@ class Repository @Inject constructor(
     private val playApi: PlaylistService
 ){
     // ------- User -------
-    suspend fun saveUser(user: UserEntity){
+    private suspend fun saveUser(user: UserEntity){
         dao.saveUser(user)
-    }
-    suspend fun deleteUser(user: UserEntity){
-        dao.deleteUser(user)
     }
     suspend fun userLogIn(): UserEntity? {
         return dao.getUserLogIn()
     }
-    suspend fun checkUserSave(id: String): UserEntity? {
-        return dao.getUser(id)
+    suspend fun checkUserSave(user: UserEntity): UserEntity? {
+        return dao.getUser(user.nameId)
     }
-    suspend fun updateStatusUser(status: Boolean, user: String){
-        dao.updateStatus(status, user)
+    suspend fun updateStatusUser(status: Boolean, user: UserEntity){
+        dao.updateStatus(status, user.nameId)
     }
     suspend fun getSpotifyUser(): UserEntity{
-        Log.d(TAG, api.getUser().toString())
         return api.getUser().toUser()
     }// TODO request Api test
 
@@ -47,33 +43,31 @@ class Repository @Inject constructor(
     suspend fun getProgram(userId: String): ProgramaEntity{
         return dao.getProgram(userId)
     }
-    suspend fun deleteProgram(id: String){
-        val program = getProgram(id)
-        dao.deleteProgram(program)
-    }
-    suspend fun saveProgram(entity: UserEntity){
+    private suspend fun saveProgram(entity: UserEntity){
         dao.saveProgram(ProgramaEntity(entity.nameId))
     }
     private suspend fun updateFinishProgram(duration: Long, program: ProgramaEntity){
         dao.updateFinishDuration(duration, program.id)
     }
+
+
     suspend fun updateStartProgram(start: Long, id: String){
         dao.updateStartDuration(start, id)
         updateProgram(id)
     }
-
+    // TODO parei aqui
 
     // ------- Playlist -------
-    suspend fun getPlaylist(idPlaylist: String): PlaylistEntity{
+    private suspend fun getPlaylist(idPlaylist: String): PlaylistEntity{
         return dao.getPlaylist(idPlaylist)
     }
     suspend fun getPlaylists(idUser: String): List<PlaylistEntity>{
         return dao.getPlaylists(idUser)
     }
-    suspend fun savePlaylist(entity: PlaylistEntity){
+    private suspend fun savePlaylist(entity: PlaylistEntity){
         dao.savePlaylist(entity)
     }
-    suspend fun deletePlaylist(entity: PlaylistEntity) {
+    private suspend fun deletePlaylist(entity: PlaylistEntity) {
         dao.deletePlaylist(entity)
     }
     private suspend fun responsePlaylist(idPlaylist: String): SpotifyPlaylist{
@@ -82,20 +76,20 @@ class Repository @Inject constructor(
 
 
     // ------- Tracks -------
-    suspend fun saveTrack(entity: TrackEntity){
+    private suspend fun saveTrack(entity: TrackEntity){
         dao.saveTrack(entity)
     }
-    suspend fun deleteTrack(track: TrackEntity){
+    private suspend fun deleteTrack(track: TrackEntity){
         dao.deleteTrack(track)
     }
-    suspend fun getTracksPlaylist(idPlaylist: String): List<TrackEntity>{
+    private suspend fun getTracksPlaylist(idPlaylist: String): List<TrackEntity>{
         return dao.getTracksPlaylist(idPlaylist)
     }
     suspend fun getTracksUser(userId : String): List<TrackEntity>{
         val listPlaylist = dao.getPlaylists(userId)
         val list: MutableList<TrackEntity> = mutableListOf()
         for (playlist in listPlaylist){
-            val music =dao.getTracksPlaylist(playlist.id)
+            val music = dao.getTracksPlaylist(playlist.id)
             list.addAll(music)
         }
         return list
@@ -132,6 +126,12 @@ class Repository @Inject constructor(
     }
 
     // --------- Logic --------- MainViewModel
+
+    suspend fun saveUserAndProgram(user: UserEntity){
+        saveUser(user)
+        saveProgram(user)
+        updateStatusUser(true, user)
+    }
 
 }
 

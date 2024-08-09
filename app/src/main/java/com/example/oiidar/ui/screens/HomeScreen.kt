@@ -26,8 +26,7 @@ import kotlinx.coroutines.delay
 @Composable
 @ExperimentalMaterial3Api
 fun HomeScreen(
-    navController : NavController,
-    logOut : () -> Unit
+    navController : NavController
 ){
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
@@ -47,7 +46,7 @@ fun HomeScreen(
                             img = state.user?.img,
                             show = state.showEnd,
                             onShow = state.onShowEnd,
-                            deslogar = { logOut() }
+                            deslogar = {  }
                         )
                     },
                     content = { innerPadding ->

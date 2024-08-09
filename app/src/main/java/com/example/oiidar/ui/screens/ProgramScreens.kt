@@ -48,10 +48,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 @ExperimentalMaterial3Api
-fun ProgramScreens(
-    navController: NavController,
-    logOut: () -> Unit
-){
+fun ProgramScreens(navController: NavController) {
     val viewModel: ProgramViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -89,7 +86,7 @@ fun ProgramScreens(
                         img = state.user?.img,
                         show = state.showEnd,
                         onShow = state.onShowEnd,
-                        deslogar = { logOut() }
+                        deslogar = {  }
                     )
                 },
                 content = { pad ->

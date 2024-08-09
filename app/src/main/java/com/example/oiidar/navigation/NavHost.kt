@@ -23,8 +23,6 @@ fun NavHost(
     navController: NavHostController,
     authInit: () -> Unit = {},
 ){
-    val user by viewModel.user.collectAsState()
-    val coroutineScope = CoroutineScope(Dispatchers.Main)
     NavHost(
         navController = navController,
         startDestination = Destination.Home.route
@@ -39,10 +37,8 @@ fun NavHost(
         composable(Destination.Home.route) {
             HomeScreen( navController = navController,
                 logOut = {
-                    coroutineScope.launch {
-                        viewModel.updateStatusUser(false, user?.nameId!!)
-                        exitProcess(0)
-                    }
+                    viewModel.logout()
+                    navController.navigate(Destination.Login.route)
                 }
             )
         }
@@ -50,10 +46,8 @@ fun NavHost(
             ProgramScreens(
                 navController = navController,
                 logOut = {
-                    coroutineScope.launch {
-                        viewModel.updateStatusUser(false, user?.nameId!!)
-                        exitProcess(0)
-                    }
+                    viewModel.logout()
+                    navController.navigate(Destination.Login.route)
                 }
             )
         }

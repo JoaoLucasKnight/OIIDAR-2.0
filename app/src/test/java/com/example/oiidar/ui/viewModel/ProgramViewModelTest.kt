@@ -15,7 +15,6 @@ import io.mockk.just
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -84,7 +83,7 @@ class ProgramViewModelTest{
         coEvery { repository.removePlaylistAndTrack(any()) } just Runs
         coEvery { repository.updateProgram(any()) } just Runs
         coEvery { repository.getProgram(any()) } returns program
-        coEvery { repository.getPlaylists(any()) } returns listPlaylist
+        coEvery { repository.getListPlaylists(any()) } returns listPlaylist
 
         vm.removePlaylist("idPlaylist", user)
 
@@ -112,7 +111,7 @@ class ProgramViewModelTest{
     fun testUpdateStarProgram_user()= runTest {
         coEvery { repository.updateStartProgram(any(),any()) } just Runs
         coEvery { repository.getProgram(any()) } returns program
-        coEvery { repository.getPlaylists(any()) } returns listPlaylist
+        coEvery { repository.getListPlaylists(any()) } returns listPlaylist
 
         vm.updateStartProgram(123456, user)
 
@@ -137,13 +136,13 @@ class ProgramViewModelTest{
     fun testLoading_user()= runTest {
         coEvery { repository.userLogIn() } returns user
         coEvery { repository.getProgram(any()) } returns program
-        coEvery { repository.getPlaylists(any()) } returns listPlaylist
+        coEvery { repository.getListPlaylists(any()) } returns listPlaylist
 
         vm.loading(user)
 
         coVerifySequence {
             repository.getProgram(any())
-            repository.getPlaylists(any())
+            repository.getListPlaylists(any())
         }
         assertEquals(vm.uiState.value.program, program)
         assertEquals(vm.uiState.value.listPlaylist, listPlaylist)
@@ -154,14 +153,14 @@ class ProgramViewModelTest{
     fun testLoading_userNull()= runTest {
         coEvery { repository.userLogIn() } returns user
         coEvery { repository.getProgram(any()) } returns program
-        coEvery { repository.getPlaylists(any()) } returns listPlaylist
+        coEvery { repository.getListPlaylists(any()) } returns listPlaylist
 
         vm.loading(null)
 
         coVerifySequence {
             repository.userLogIn()
             repository.getProgram(any())
-            repository.getPlaylists(any())
+            repository.getListPlaylists(any())
         }
         assertEquals(vm.uiState.value.user, user)
         assertEquals(vm.uiState.value.program, program)
@@ -173,7 +172,7 @@ class ProgramViewModelTest{
     fun testLoading_userException()= runTest {
         coEvery { repository.userLogIn() }  throws Exception("User null")
         coEvery { repository.getProgram(any()) } returns program
-        coEvery { repository.getPlaylists(any()) } returns listPlaylist
+        coEvery { repository.getListPlaylists(any()) } returns listPlaylist
         val list = emptyList<PlaylistEntity>()
 
         vm.loading(null)
@@ -190,7 +189,7 @@ class ProgramViewModelTest{
     fun testLoading_programException()= runTest {
         coEvery { repository.userLogIn() }  returns user
         coEvery { repository.getProgram(any()) } throws Exception("program null")
-        coEvery { repository.getPlaylists(any()) } returns listPlaylist
+        coEvery { repository.getListPlaylists(any()) } returns listPlaylist
         val list = emptyList<PlaylistEntity>()
 
         vm.loading(null)

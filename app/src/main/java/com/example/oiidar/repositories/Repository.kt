@@ -1,14 +1,10 @@
 package com.example.oiidar.repositories
 
-import android.util.Log
-import com.example.oiidar.contantes.TAG
-import com.example.oiidar.convertType.toPlaylist
 import com.example.oiidar.database.dao.Dao
 import com.example.oiidar.database.entities.PlaylistEntity
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
-import com.example.oiidar.convertType.toTrackEntity
 import com.example.oiidar.convertType.toUser
 import com.example.oiidar.model.SpotifyPlaylist
 import com.example.oiidar.net.service.PlaylistService
@@ -40,8 +36,8 @@ class Repository @Inject constructor(
 
 
     //          --------- Program ---------
-    suspend fun getProgram(userId: String): ProgramaEntity{
-        return dao.getProgram(userId)
+    suspend fun getProgram(user: UserEntity): ProgramaEntity{
+        return dao.getProgram(user.nameId)
     }
     private suspend fun saveProgram(entity: UserEntity){
         dao.saveProgram(ProgramaEntity(entity.nameId))
@@ -49,20 +45,17 @@ class Repository @Inject constructor(
     private suspend fun updateFinishProgram(duration: Long, program: ProgramaEntity){
         dao.updateFinishDuration(duration, program.id)
     }
-
-
-    suspend fun updateStartProgram(start: Long, id: String){
-        dao.updateStartDuration(start, id)
-        updateProgram(id)
+    suspend fun updateStartProgram(start: Long, user: UserEntity){
+        dao.updateStartDuration(start, user.nameId)
+        updateProgram(user)
     }
-    // TODO parei aqui
 
     // ------- Playlist -------
     private suspend fun getPlaylist(idPlaylist: String): PlaylistEntity{
         return dao.getPlaylist(idPlaylist)
     }
-    suspend fun getPlaylists(idUser: String): List<PlaylistEntity>{
-        return dao.getPlaylists(idUser)
+    suspend fun getListPlaylists(user: UserEntity): List<PlaylistEntity>{
+        return dao.getListPlaylists(user.nameId)
     }
     private suspend fun savePlaylist(entity: PlaylistEntity){
         dao.savePlaylist(entity)
@@ -85,8 +78,8 @@ class Repository @Inject constructor(
     private suspend fun getTracksPlaylist(idPlaylist: String): List<TrackEntity>{
         return dao.getTracksPlaylist(idPlaylist)
     }
-    suspend fun getTracksUser(userId : String): List<TrackEntity>{
-        val listPlaylist = dao.getPlaylists(userId)
+    suspend fun getTracksUser(user : UserEntity): List<TrackEntity>{
+        val listPlaylist = getListPlaylists(user)
         val list: MutableList<TrackEntity> = mutableListOf()
         for (playlist in listPlaylist){
             val music = dao.getTracksPlaylist(playlist.id)
@@ -97,27 +90,26 @@ class Repository @Inject constructor(
 
 
     // --------- Logic ---------ProgramViewModel
-    suspend fun searchAndSave(idPlaylist: String, idUser: String){
+    suspend fun searchAndSave(idPlaylist: String, user: UserEntity){
         val spotifyPlaylist = responsePlaylist(idPlaylist)
+        val list = spotifyPlaylist.getListTrackItems()
         var duration: Long = 0
-        for (track in spotifyPlaylist.tracks.items){
-            val entity = track.track.toTrackEntity(spotifyPlaylist.id)
-            duration += track.track.durationMs
+        for (track in list){
+            val entity = spotifyPlaylist.getTrackEntity(track, idPlaylist)
+            duration += entity.duration
             saveTrack(entity)
         }
-        val entity = spotifyPlaylist.toPlaylist(idUser, duration)
+        val entity = spotifyPlaylist.toPlaylistEntity(user.nameId, duration)
         savePlaylist(entity)
     }
     suspend fun removePlaylistAndTrack(idPlaylist: String){
         val listTrack = getTracksPlaylist(idPlaylist)
-        for (track in listTrack){
-            deleteTrack(track)
-        }
+        for (track in listTrack){ deleteTrack(track) }
         deletePlaylist(getPlaylist(idPlaylist))
     }
-    suspend fun updateProgram(idUser: String){
-        val list = getPlaylists(idUser)
-        val program = getProgram(idUser)
+    suspend fun updateProgram( user: UserEntity){
+        val list = getListPlaylists(user)
+        val program = getProgram(user)
         var duration: Long = program.startTime
         for (playlist in list){
             duration += playlist.duration
@@ -126,13 +118,11 @@ class Repository @Inject constructor(
     }
 
     // --------- Logic --------- MainViewModel
-
     suspend fun saveUserAndProgram(user: UserEntity){
         saveUser(user)
         saveProgram(user)
         updateStatusUser(true, user)
     }
-
 }
 
 

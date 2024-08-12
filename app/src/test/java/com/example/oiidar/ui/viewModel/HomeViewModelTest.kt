@@ -106,9 +106,9 @@ class HomeViewModelTest{
 
         coVerifySequence {
             repos.userLogIn()
-            repos.getProgram("id")
-            repos.getTracksUser("id")
-            repos.getProgram("id")
+            repos.getProgram(user)
+            repos.getTracksUser(user)
+            repos.getProgram(user)
         }
         assertEquals(viewModel.uiState.value.user, user)
         assertEquals(viewModel.uiState.value.program, program)

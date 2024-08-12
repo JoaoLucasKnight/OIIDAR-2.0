@@ -7,7 +7,6 @@ import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
 import com.example.oiidar.ui.uiStates.ProgramState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -53,19 +52,19 @@ class ProgramViewModel @Inject constructor(
     }
     private suspend fun loadProgram(user: UserEntity? = uiState.value.user){
         user?.let {
-            _uiState.update { state -> state.copy(program = repository.getProgram(it.nameId))
+            _uiState.update { state -> state.copy(program = repository.getProgram(user))
             }
         }
     }
     private suspend fun loadListTracks(user: UserEntity? = uiState.value.user){
-        user?.let { _uiState.update { state -> state.copy(listPlaylist = repository.getPlaylists(it.nameId)) } }
+        user?.let { _uiState.update { state -> state.copy(listPlaylist = repository.getListPlaylists(user)) } }
     }
     fun searchAndSave(idPlaylist: String, user: UserEntity? = uiState.value.user){
         viewModelScope.launch {
             user?.let {user ->
                 try {
-                    repository.searchAndSave(idPlaylist,user.nameId)
-                    repository.updateProgram(user.nameId)
+                    repository.searchAndSave(idPlaylist,user)
+                    repository.updateProgram(user)
                     loading(user)
                 } catch (e: Exception){
                     e.printStackTrace()
@@ -80,7 +79,7 @@ class ProgramViewModel @Inject constructor(
             user?.let { user ->
                 try {
                     repository.removePlaylistAndTrack(idPlaylist)
-                    repository.updateProgram(user.nameId)
+                    repository.updateProgram(user)
                     loading(user)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -93,7 +92,7 @@ class ProgramViewModel @Inject constructor(
         viewModelScope.launch {
             user?.let { user ->
                 try {
-                    repository.updateStartProgram(ms, user.nameId)
+                    repository.updateStartProgram(ms, user)
                     loading(user)
                 }
                 catch (e: Exception){

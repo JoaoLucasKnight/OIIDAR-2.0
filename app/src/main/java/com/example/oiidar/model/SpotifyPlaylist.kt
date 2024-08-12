@@ -1,5 +1,9 @@
 package com.example.oiidar.model
 
+import com.example.oiidar.convertType.toTrackEntity
+import com.example.oiidar.database.entities.PlaylistEntity
+import com.example.oiidar.database.entities.TrackEntity
+
 data class SpotifyPlaylist(
     val href: String,
     val id: String,
@@ -7,4 +11,21 @@ data class SpotifyPlaylist(
     val name: String,
     val tracks: Tracks,
     val uri: String
-)
+){
+    fun getListTrackItems() : List<TrackItens>{
+        return tracks.items
+    }
+    fun getTrackEntity(track: TrackItens,id: String) : TrackEntity {
+        return track.track.toTrackEntity(id)
+    }
+    fun toPlaylistEntity(userId: String,duration: Long) : PlaylistEntity {
+        return PlaylistEntity(
+            userId = userId,
+            id = id,
+            img = images.first().url ,
+            name = name,
+            uri = uri,
+            duration = duration
+        )
+    }
+}

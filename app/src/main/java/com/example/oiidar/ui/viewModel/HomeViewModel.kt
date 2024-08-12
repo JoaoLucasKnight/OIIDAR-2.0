@@ -58,7 +58,7 @@ class HomeViewModel @Inject constructor(
         }
     }
     private suspend fun loadProgram(user: UserEntity, programState: ProgramaEntity? = uiState.value.program){
-        val program = repository.getProgram(user.nameId)
+        val program = repository.getProgram(user)
         if(programState != program){
             _uiState.update { state ->
                 state.copy(program = program)
@@ -68,7 +68,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { state-> state.copy(loading = "LOAD") }
     }
     private suspend fun loadTracks(user: UserEntity){
-        val tracks = repository.getTracksUser(user.nameId)
+        val tracks = repository.getTracksUser(user)
         _uiState.update { state-> state.copy(tracks = tracks) }
     }
 

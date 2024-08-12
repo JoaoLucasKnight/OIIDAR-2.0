@@ -15,16 +15,7 @@ fun SpotifyUser.toUser(): UserEntity {
         status = true
     )
 }
-fun SpotifyPlaylist.toPlaylist(userId: String, duration: Long): PlaylistEntity  {
-    return PlaylistEntity(
-        userId = userId,
-        id = id,
-        img = images.first().url,
-        name = name,
-        uri = uri,
-        duration = duration
-    )
-}
+
 fun Track.toTrackEntity(idPlayist: String): TrackEntity {
     return TrackEntity(
         playlistId = idPlayist,

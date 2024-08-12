@@ -57,7 +57,7 @@ class ConvertKtTest{
             "uri teste", 1000
         )
 
-        val playlistEntity = spotifyPlaylist.toPlaylist("kirajota1", 1000)
+        val playlistEntity = spotifyPlaylist.toPlaylistEntity("kirajota1", 1000)
 
         assertEquals(playlistEntity, entityPlaylist)
 

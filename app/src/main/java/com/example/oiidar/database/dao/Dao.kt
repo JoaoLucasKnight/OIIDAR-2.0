@@ -52,7 +52,7 @@ interface Dao {
     suspend fun savePlaylist(playlist: PlaylistEntity)
 
     @Query("SELECT * FROM PlaylistEntity WHERE userId= :userId")
-    suspend fun getPlaylists(userId: String): List<PlaylistEntity>
+    suspend fun getListPlaylists(userId: String): List<PlaylistEntity>
 
     @Query("SELECT * FROM PlaylistEntity WHERE id = :idPlaylist")
     suspend fun getPlaylist(idPlaylist: String): PlaylistEntity

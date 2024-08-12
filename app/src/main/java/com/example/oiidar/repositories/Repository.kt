@@ -30,10 +30,11 @@ class Repository @Inject constructor(
     suspend fun updateStatusUser(status: Boolean, user: UserEntity){
         dao.updateStatus(status, user.nameId)
     }
+
     suspend fun getSpotifyUser(): UserEntity{
         return api.getUser().toUser()
-    }// TODO request Api test
-
+    }
+    // TODO request Api test
 
     //          --------- Program ---------
     suspend fun getProgram(user: UserEntity): ProgramaEntity{
@@ -65,7 +66,8 @@ class Repository @Inject constructor(
     }
     private suspend fun responsePlaylist(idPlaylist: String): SpotifyPlaylist{
         return playApi.getPlaylist(idPlaylist)
-    }// TODO request Api test
+    }
+    // TODO request Api test
 
 
     // ------- Tracks -------
@@ -87,7 +89,6 @@ class Repository @Inject constructor(
         }
         return list
     }
-
 
     // --------- Logic ---------ProgramViewModel
     suspend fun searchAndSave(idPlaylist: String, user: UserEntity){

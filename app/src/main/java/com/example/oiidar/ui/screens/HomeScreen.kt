@@ -52,10 +52,10 @@ fun HomeScreen(
                     content = { innerPadding ->
                         Body(
                             pad = innerPadding,
-                            nav = navController,
+                            nav = { navController.navigate(it) },
                             program = state.program,
                             status = state.status,
-                            musica = state.track,
+                            music = state.track,
                         )
                     },
                     bottomBar = {

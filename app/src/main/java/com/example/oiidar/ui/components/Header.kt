@@ -29,21 +29,21 @@ fun Header(
     deslogar: () -> Unit
 ){
     Row (
-        modifier = Modifier.height(120.dp).fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().height(120.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.oiidar), contentDescription = "logo OIIDAR",
-            modifier = Modifier.size(200.dp)
+            painter = painterResource(id = R.drawable.oiidar), contentDescription = "Logo",
+            modifier = Modifier.size(240.dp)
         )
         TextButton(
             onClick = { onShow(show) }
         ) {
             AsyncImage(
                 model = img,
-                contentDescription = "Imagem de perfil",
-                modifier = Modifier.size(100.dp).clip(CircleShape)
+                contentDescription = "Picture in the profile",
+                modifier = Modifier.size(80.dp).clip(CircleShape)
             )
         }
     }

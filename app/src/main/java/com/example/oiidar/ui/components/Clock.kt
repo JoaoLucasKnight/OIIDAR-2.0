@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,25 +26,20 @@ import kotlin.text.*
 @SuppressLint("DefaultLocale")
 @Composable
 fun Clock(
-
-){
+    modifier: Modifier = Modifier
+) {
     fun nowHoras(): Horas {
         val clock = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return Horas(clock.hour.toLong(), clock.minute.toLong(), clock.second.toLong())
     }
     var horas by remember { mutableStateOf(nowHoras()) }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp),
-    ){
+    Box(modifier.padding(32.dp)){
         LaunchedEffect(key1 = true) {
-            while (true) {
+            while(true) {
                 delay(1000)
                 horas = nowHoras()
             }
         }
-
         Text(
             text = String.format("%02d:%02d:%02d", horas.hour, horas.minute, horas.second),
             modifier = Modifier.align(Alignment.Center),

@@ -1,5 +1,5 @@
 package com.example.oiidar.model
 
-data class TrackItens(
+data class TrackItems(
     val track: Track
 )

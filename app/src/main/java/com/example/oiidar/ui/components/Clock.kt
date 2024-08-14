@@ -2,8 +2,6 @@ package com.example.oiidar.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.text.*
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -33,7 +30,7 @@ fun Clock(
         return Horas(clock.hour.toLong(), clock.minute.toLong(), clock.second.toLong())
     }
     var horas by remember { mutableStateOf(nowHoras()) }
-    Box(modifier.padding(32.dp)){
+    Box(modifier.padding(16.dp)){
         LaunchedEffect(key1 = true) {
             while(true) {
                 delay(1000)

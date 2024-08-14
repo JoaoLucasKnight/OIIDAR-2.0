@@ -23,18 +23,18 @@ import com.example.oiidar.ui.theme.OIIDARTheme
 
 @Composable
 fun Playlists(
-    lista: List<PlaylistEntity>,
-    apagaPlaylist: (String) -> Unit
+    list: List<PlaylistEntity>,
+    deletePlaylist: (String) -> Unit
 ){
     LazyColumn(
         Modifier.padding(16.dp)
     ){
-        for(playlist in lista){
+        for(playlist in list){
             item{
                 ListItem(
                     headlineContent = { Text(playlist.name) },
                     overlineContent = { Text("PLAYLIST") },
-                    supportingContent = { Text(playlist.duration.toHoras(playlist.duration).toString()) },
+                    supportingContent = { Text(toHoras(playlist.duration).toString()) },
                     leadingContent = {
                         AsyncImage(
                             model = playlist.img,
@@ -43,7 +43,7 @@ fun Playlists(
                             )
                     },
                     trailingContent = {
-                        IconButton(onClick = { apagaPlaylist(playlist.id) }) {
+                        IconButton(onClick = { deletePlaylist(playlist.id) }) {
                             Icon(
                                 imageVector = Icons.Filled.Delete,
                                 contentDescription = null

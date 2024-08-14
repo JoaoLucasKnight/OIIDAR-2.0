@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
@@ -26,10 +27,10 @@ fun Header(
     img: String?,
     show: Boolean,
     onShow: (Boolean) -> Unit,
-    deslogar: () -> Unit
+    logOut: () -> Unit
 ){
     Row (
-        modifier = Modifier.fillMaxWidth().height(120.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 32.dp).height(120.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -49,8 +50,8 @@ fun Header(
     }
     if (show) {
         LogOutDialog(
-            onDismissRequest = { onShow(show) },
-            onConfirmation = { deslogar() }
+            onDismissRequest = { onShow(false) },
+            onConfirmation = { logOut() }
         )
     }
 }
@@ -64,7 +65,7 @@ fun HeaderPreview(){
                 img = null,
                 show = false,
                 onShow = {},
-                deslogar = {}
+                logOut = {}
             )
         }
     }

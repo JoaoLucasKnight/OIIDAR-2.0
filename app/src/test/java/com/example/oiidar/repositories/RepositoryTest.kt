@@ -9,7 +9,7 @@ import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.model.Album
 import com.example.oiidar.model.SpotifyPlaylist
 import com.example.oiidar.model.Track
-import com.example.oiidar.model.TrackItens
+import com.example.oiidar.model.TrackItems
 import com.example.oiidar.net.service.PlaylistService
 import com.example.oiidar.net.service.UserService
 import io.mockk.Runs
@@ -40,7 +40,7 @@ class RepositoryTest {
     private val listTracks = listOf(trackEntity,trackEntity)
     private val spotifyPlaylist = mockk<SpotifyPlaylist>()
     private val track = Track(1000,mockk<Album>(),"img","name","type", "uri")
-    private val trackItems = TrackItens(track)
+    private val trackItems = TrackItems(track)
     private val listTrackItems = listOf(trackItems,trackItems,trackItems)
 @Before
 fun setUp() {

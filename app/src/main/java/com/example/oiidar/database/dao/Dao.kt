@@ -12,7 +12,7 @@ import com.example.oiidar.database.entities.UserEntity
 @Dao
 interface Dao {
 
-    // ------ Usuarios --------
+    // ------ User --------
     @Insert
     suspend fun saveUser(user: UserEntity)
 
@@ -31,12 +31,12 @@ interface Dao {
     @Query("UPDATE UserEntity SET status = :status WHERE nameId = :userid")
     suspend fun updateStatus(status: Boolean, userid: String)
 
-    // ------ Programas --------
+    // ------ Programs --------
     @Insert
-    suspend fun saveProgram(programa: ProgramaEntity)
+    suspend fun saveProgram(program: ProgramaEntity)
 
     @Delete
-    suspend fun deleteProgram(programa: ProgramaEntity)
+    suspend fun deleteProgram(program: ProgramaEntity)
 
     @Query("UPDATE ProgramaEntity SET startTime = :start WHERE id = :id")
     suspend fun updateStartDuration(start: Long,  id: String)
@@ -44,8 +44,8 @@ interface Dao {
     @Query("UPDATE ProgramaEntity SET finishTime = :finish WHERE id = :id")
     suspend fun updateFinishDuration(finish: Long, id: String)
 
-    @Query("SELECT * FROM ProgramaEntity WHERE id = :programaid")
-    suspend fun getProgram(programaid: String): ProgramaEntity
+    @Query("SELECT * FROM ProgramaEntity WHERE id = :programId")
+    suspend fun getProgram(programId: String): ProgramaEntity
 
     // ------ Playlist  --------
     @Insert

@@ -30,25 +30,26 @@ fun ProgramComponent(
     program: ProgramaEntity?
 ){
     Column(modifier) {
-        Text(
-            text = AppStrings.PROGRAM,
-            style = MaterialTheme.typography.headlineMedium,
-        )
+        TextTitle(text = AppStrings.PROGRAM)
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp, 32.dp, 16.dp, 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp, 32.dp, 16.dp, 16.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             program?.let {
-                val startTime = program.startTime.toHoras(it.startTime)
-                val finishTime = program.finishTime.toHoras(it.finishTime)
+                val startTime = toHoras(it.startTime)
+                val finishTime = toHoras(it.finishTime)
                 Text(
                     text = "${AppStrings.PROGRAM_START}: $startTime",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Text(
                     text = "${AppStrings.PROGRAM_END}: $finishTime",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }

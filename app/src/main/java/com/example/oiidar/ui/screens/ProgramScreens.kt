@@ -2,12 +2,11 @@ package com.example.oiidar.ui.screens
 
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,12 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -39,11 +35,12 @@ import com.example.oiidar.convertType.toHoras
 import com.example.oiidar.convertType.toMs
 import com.example.oiidar.model.Horas
 import com.example.oiidar.navigation.Destination
-import com.example.oiidar.ui.viewModel.ProgramViewModel
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.Playlists
+import com.example.oiidar.ui.components.TextTitle
 import com.example.oiidar.ui.dialogs.TimerEditDialog
-import com.example.oiidar.ui.theme.OIIDARTheme
+import com.example.oiidar.ui.text.AppStrings
+import com.example.oiidar.ui.viewModel.ProgramViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -53,6 +50,7 @@ fun ProgramScreens(navController: NavController) {
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
 
+    val fatherModifier = Modifier.fillMaxWidth().padding(24.dp)
     when(state.loading){
         "LOADING" ->{
             Surface{
@@ -70,35 +68,24 @@ fun ProgramScreens(navController: NavController) {
             }
         }
         "LOAD" ->{
-            var finishHour = Horas()
-            var startHour = Horas()
-            state.program?.let {
-                finishHour = it.finishTime.toHoras(it.finishTime)
-                startHour = it.startTime.toHoras(it.startTime)
-            }
+            val startHour = state.program?.let { toHoras(it.startTime) }
+                ?: Horas()
             Scaffold(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(0.dp, 32.dp, 0.dp, 0.dp),
                 topBar = {
                     Header(
                         img = state.user?.img,
                         show = state.showEnd,
                         onShow = state.onShowEnd,
-                        deslogar = {  }
+                        logOut = {  }
                     )
                 },
                 content = { pad ->
-                    Column(modifier = Modifier
-                        .padding(pad)
-                        .padding(16.dp, 0.dp)) {
+                    Column(modifier = Modifier.padding(pad))
+                    {
                         OutlinedTextField (
                             value = state.url,
                             onValueChange = {state.onUrl(it)},
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(0.dp, 32.dp),
+                            modifier = fatherModifier,
                             label = {
                                 Row {
                                     Icon(
@@ -110,50 +97,36 @@ fun ProgramScreens(navController: NavController) {
                                 }
                             },
                             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(
-                                onSearch = {
+                            keyboardActions = KeyboardActions(onSearch = {
                                     viewModel.searchAndSave(state.url)
                                     focusManager.clearFocus()
                                 }
                             )
                         )
-                        Text(
-                            text = "Editar Programação",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                        Playlists(
-                            lista = state.listPlaylist,
-                            apagaPlaylist = { playlist ->
-                                viewModel.removePlaylist(playlist)
-                            }
-                        )
-                        Row (
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(0.dp, 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ){
-                            Text(
-                                text = "Editar Inicio:",
-                                modifier = Modifier.align(Alignment.CenterVertically),
-                                style = MaterialTheme.typography.headlineSmall
+                        Column(fatherModifier){
+                            // add scroll over here
+                            TextTitle(text = AppStrings.TITLE_PLAYLIST)
+                            Playlists(
+                                list = state.listPlaylist,
+                                deletePlaylist = { playlist -> viewModel.removePlaylist(playlist) }
                             )
-                            OutlinedButton(
-                                onClick = { state.onShowTimer(true)}
-                            ) {
-                                Text(
-                                    text = startHour.toString(),
-                                    style = MaterialTheme.typography.displayMedium
-                                )
-                            }
                         }
-                        Box (modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp, 16.dp)){
+                    }
+                },
+                bottomBar = {
+                    Row (
+                        modifier = Modifier.height(92.dp).then(fatherModifier),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(
+                            text = AppStrings.TITLE_E_STAR,
+                            Modifier.padding(top =8.dp),
+                            style = MaterialTheme.typography.headlineMedium)
+                        OutlinedButton(onClick = { state.onShowTimer(true)}
+                        ) {
                             Text(
-                                text = "Sua programação irá acabar ás: ${finishHour.stringWithSeconds()}",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.bodyLarge
+                                text = startHour.toString(),
+                                style = MaterialTheme.typography.displayMedium
                             )
                         }
                     }
@@ -165,20 +138,10 @@ fun ProgramScreens(navController: NavController) {
                     time = startHour,
                     salvar = { horas ->
                         viewModel.updateStartProgram(horas.toMs())
-
                         state.onShowTimer(false)
                     }
                 )
             }
-        }
-    }
-}
-@Preview
-@Composable
-@ExperimentalMaterial3Api
-private fun ProgramPreview(){
-    OIIDARTheme {
-        Surface {
         }
     }
 }

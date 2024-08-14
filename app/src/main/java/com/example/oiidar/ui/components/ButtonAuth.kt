@@ -1,6 +1,5 @@
 package com.example.oiidar.ui.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -10,10 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.oiidar.ui.text.AppStrings
 import com.example.oiidar.ui.theme.OIIDARTheme
 
 @Composable
-fun ButtonToggle(
+fun ButtonAuth(
     checked: Boolean,
     auth: () -> Unit,
     logIn:() -> Unit
@@ -24,7 +24,7 @@ fun ButtonToggle(
            colors = ButtonDefaults
                .buttonColors(containerColor =MaterialTheme.colorScheme.primary)
        ) {
-           Text(text = "Entrar na OIIDAR", style = MaterialTheme.typography.bodyLarge)
+           Text(text = AppStrings.BTT_AUHT_IN, style = MaterialTheme.typography.bodyLarge)
        }
    } else {
        Button(
@@ -32,7 +32,7 @@ fun ButtonToggle(
            colors = ButtonDefaults
                .buttonColors(containerColor =MaterialTheme.colorScheme.onTertiaryContainer)
        ) {
-           Text(text = "Solocitar Autorização", style = MaterialTheme.typography.bodyLarge)
+           Text(text = AppStrings.BTT_AUHT_FIND, style = MaterialTheme.typography.bodyLarge)
        }
    }
 }
@@ -41,7 +41,7 @@ fun ButtonToggle(
 @Composable
 fun ButtonTogglePreview(){
     OIIDARTheme {
-        ButtonToggle(checked = true, auth = {}, logIn = {})
+        ButtonAuth(checked = true, auth = {}, logIn = {})
     }
 }
 
@@ -49,6 +49,6 @@ fun ButtonTogglePreview(){
 @Composable
 fun ButtonToggleFalsePreview(){
     OIIDARTheme {
-        ButtonToggle(checked = false, auth = {}, logIn = {})
+        ButtonAuth(checked = false, auth = {}, logIn = {})
     }
 }

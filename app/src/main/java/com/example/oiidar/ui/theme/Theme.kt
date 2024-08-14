@@ -88,12 +88,7 @@ fun OIIDARTheme(
 
     content: @Composable () -> Unit
 ) {
-    val colorScheme =
-        if (!darkTheme) {
-            lightScheme
-        } else {
-            darkScheme
-    }
+    val colorScheme = if (!darkTheme) { lightScheme } else { darkScheme }
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,

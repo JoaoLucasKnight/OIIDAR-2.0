@@ -11,30 +11,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.oiidar.R
+import com.example.oiidar.ui.text.AppStrings
 
 @Composable
 fun ErrorScreen() {
     Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.5f),
+        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.oiidar),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .align(Alignment.BottomEnd)
+                modifier = Modifier.fillMaxWidth(1f).align(Alignment.BottomEnd)
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-        ) {
-            Text(text = "Algo deu errado",
-                modifier = Modifier.align(Alignment.Center))
-        }
+        Box(modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        ) { Text(text = AppStrings.ERROR, modifier = Modifier.align(Alignment.Center)) }
     }
 }

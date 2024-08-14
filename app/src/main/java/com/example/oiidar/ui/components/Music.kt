@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,10 +20,7 @@ fun Music(
     music: TrackEntity?
 ){
     Column(modifier) {
-        Text(
-            text = AppStrings.MUSIC_TITLE,
-            style = MaterialTheme.typography.headlineSmall,
-        )
+        TextTitle(text = AppStrings.MUSIC_TITLE)
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
@@ -32,15 +28,8 @@ fun Music(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if(status){
-                music?.let {
-                    ElevaCard(
-                        largura = 140,
-                        altura = 200,
-                        musica = it
-                    )
-                }?: run {
-                    Text(AppStrings.MUSIC_DESC_NULL)
-                }
+                music?.let { MusicCard(music = it)
+                }?: run { Text(AppStrings.MUSIC_DESC_NULL) }
             }else {
                 Text(AppStrings.MUSIC_DESC_END)
             }

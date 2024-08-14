@@ -12,10 +12,10 @@ data class SpotifyPlaylist(
     val tracks: Tracks,
     val uri: String
 ){
-    fun getListTrackItems() : List<TrackItens>{
+    fun getListTrackItems() : List<TrackItems>{
         return tracks.items
     }
-    fun getTrackEntity(track: TrackItens,id: String) : TrackEntity {
+    fun getTrackEntity(track: TrackItems, id: String) : TrackEntity {
         return track.track.toTrackEntity(id)
     }
     fun toPlaylistEntity(userId: String,duration: Long) : PlaylistEntity {

@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.oiidar.R
 import com.example.oiidar.navigation.Destination
-import com.example.oiidar.ui.components.ButtonToggle
+import com.example.oiidar.ui.components.ButtonAuth
 import com.example.oiidar.ui.viewModel.MainViewModel
 
 
@@ -57,7 +57,7 @@ fun LoginScreen(
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                   ButtonToggle(
+                   ButtonAuth(
                        checked = check,
                        auth = {authInit()},
                        logIn = { viewModel.checkSaveOrSave()}

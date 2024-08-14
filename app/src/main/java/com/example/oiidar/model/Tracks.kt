@@ -5,6 +5,6 @@ data class Tracks(
     val previous: Int?,
     val total: Int,
     val offset: Int,
-    val items: List<TrackItens>
+    val items: List<TrackItems>
 )
 

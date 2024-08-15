@@ -26,10 +26,10 @@ class ProgramViewModel @Inject constructor(
                 user?.let {
                     loadProgram(it)
                     loadListTracks(it)
+                    passState("LOAD")
                 }?: run {
                     loadUser()
                 }
-                passState("LOAD")
             } catch (e: Exception){
                 passState("ERROR")
                 e.printStackTrace()
@@ -44,6 +44,7 @@ class ProgramViewModel @Inject constructor(
                 }
                 loadProgram()
                 loadListTracks()
+                passState("LOAD")
             } catch (e: Exception) {
                 passState("ERROR")
                 e.printStackTrace()
@@ -51,10 +52,7 @@ class ProgramViewModel @Inject constructor(
         }
     }
     private suspend fun loadProgram(user: UserEntity? = uiState.value.user){
-        user?.let {
-            _uiState.update { state -> state.copy(program = repository.getProgram(user))
-            }
-        }
+        user?.let { _uiState.update { state -> state.copy(program = repository.getProgram(user)) } }
     }
     private suspend fun loadListTracks(user: UserEntity? = uiState.value.user){
         user?.let { _uiState.update { state -> state.copy(listPlaylist = repository.getListPlaylists(user)) } }

@@ -31,60 +31,46 @@ class HomeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
     init { loadState() }
 
-    //Todo separar logica dentro do user
     fun loading(){
         viewModelScope.launch {
             try {
                 val user = uiState.value.user
                 user?.let {
                     loadProgram(it)
+                    loadTracks(it)
+                    passState("LOAD")
                 }?: run {
                     loadUser()
                 }
             }catch (e: Exception){
-                _uiState.update { state-> state.copy(loading = "ERROR") }
+                passState("ERROR")
                 Log.i(TAG, "loading: ${e.message}")
             }
         }
     }
+    private fun passState(pass: String){ _uiState.update { state-> state.copy(loading = pass) } }
      suspend fun loadUser(){
-        val user = repository.userLogIn()
-        user?. let{
-            _uiState.update { state-> state.copy(user = it) }
-            loadProgram(it)
-        }?: run {
-            _uiState.update { state-> state.copy(loading = "ERROR") }
-            Log.i(TAG, "loading: user == null")
-        }
+         try {
+             _uiState.update { state -> state.copy(user = repository.userLogIn()!!) }
+             loadProgram()
+             loadTracks()
+             passState("LOAD")
+         }catch (e: Exception){
+             e.printStackTrace()
+             passState("ERROR")
+         }
     }
-    private suspend fun loadProgram(user: UserEntity, programState: ProgramaEntity? = uiState.value.program){
-        val program = repository.getProgram(user)
-        if(programState != program){
-            _uiState.update { state ->
-                state.copy(program = program)
-            }
-            loadTracks(user)
-        }
-        _uiState.update { state-> state.copy(loading = "LOAD") }
+    private suspend fun loadProgram(user: UserEntity? = uiState.value.user){
+        user?.let { _uiState.update { state-> state.copy(program = repository.getProgram(user)) } }
     }
-    private suspend fun loadTracks(user: UserEntity){
-        val tracks = repository.getTracksUser(user)
-        _uiState.update { state-> state.copy(tracks = tracks) }
+    private suspend fun loadTracks(user: UserEntity? = uiState.value.user){
+        user?.let { _uiState.update { state-> state.copy(tracks = repository.getTracksUser(user)) } }
     }
-
     private  fun loadState(){
         _uiState.update { stateInitial ->
             stateInitial.copy(
-                onShowEnd = { show->
-                    _uiState.update {
-                        it.copy(showEnd = show)
-                    }
-                },
-                onTrigger = { trigger ->
-                    _uiState.update {
-                        it.copy(trigger = trigger)
-                    }
-                }
+                onShowEnd = { show-> _uiState.update { it.copy(showEnd = show) } },
+                onTrigger = { trigger -> _uiState.update { it.copy(trigger = trigger) } }
             )
         }
     }
@@ -162,5 +148,6 @@ class HomeViewModel @Inject constructor(
             Spotify.adionarFila(uri)
         }
     }
+
 }
 

@@ -8,8 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.components.Body
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.NavBottom
@@ -20,7 +18,8 @@ import kotlinx.coroutines.delay
 @Composable
 @ExperimentalMaterial3Api
 fun HomeScreen(
-    navController : NavController
+    nav : (String) -> Unit,
+    logOut: () -> Unit
 ){
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
@@ -34,13 +33,13 @@ fun HomeScreen(
                         img = state.user?.img,
                         show = state.showEnd,
                         onShow = state.onShowEnd,
-                        logOut = {  }
+                        logOut = { logOut() }
                     )
                 },
                 content = { innerPadding ->
                     Body(
                         pad = innerPadding,
-                        nav = { navController.navigate(it) },
+                        nav = { nav(it) },
                         state = state
                     )
                 },
@@ -74,7 +73,7 @@ fun HomeScreen(
                 ErrorScreen()
                 LaunchedEffect(key1 = Unit) {
                     delay(1500)
-                    navController.navigate(Destination.Login.route)
+                    logOut()
                 }
             }
         }

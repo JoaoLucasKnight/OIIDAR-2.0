@@ -39,7 +39,7 @@ fun Header(
             modifier = Modifier.size(240.dp)
         )
         TextButton(
-            onClick = { onShow(show) }
+            onClick = { onShow(true) }
         ) {
             AsyncImage(
                 model = img,

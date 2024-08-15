@@ -30,11 +30,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.example.oiidar.convertType.toHoras
 import com.example.oiidar.convertType.toMs
 import com.example.oiidar.model.Horas
-import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.Playlists
 import com.example.oiidar.ui.components.TextTitle
@@ -45,7 +43,10 @@ import kotlinx.coroutines.delay
 
 @Composable
 @ExperimentalMaterial3Api
-fun ProgramScreens(navController: NavController) {
+fun ProgramScreens(
+    nav: (String) -> Unit,
+    logOut: () -> Unit
+) {
     val viewModel: ProgramViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
@@ -63,7 +64,7 @@ fun ProgramScreens(navController: NavController) {
                 ErrorScreen()
                 LaunchedEffect(key1 = Unit) {
                     delay(1500)
-                    navController.navigate(Destination.Login.route)
+                    logOut()
                 }
             }
         }
@@ -76,7 +77,7 @@ fun ProgramScreens(navController: NavController) {
                         img = state.user?.img,
                         show = state.showEnd,
                         onShow = state.onShowEnd,
-                        logOut = {  }
+                        logOut = { logOut() }
                     )
                 },
                 content = { pad ->

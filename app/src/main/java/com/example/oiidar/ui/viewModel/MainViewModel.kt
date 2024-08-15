@@ -1,15 +1,10 @@
 package com.example.oiidar.ui.viewModel
 
 
-import android.util.Log
-import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.oiidar.contantes.TAG
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.repositories.Repository
-import com.spotify.sdk.android.auth.AuthorizationClient
-import com.spotify.sdk.android.auth.AuthorizationResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +22,19 @@ class MainViewModel @Inject constructor(
     private val _auth = MutableStateFlow<Boolean>(false)
     val auth = _auth.asStateFlow()
 
+    fun checkUser() {
+        viewModelScope.launch {
+            _user.value = repository.userLogIn()
+        }
+    }
+    fun logOut(){
+        viewModelScope.launch {
+            user.value?.let{
+                repository.updateStatusUser(false,it)
+                _user.value = null
+            }
+        }
+    }
     fun checkSaveOrSave(){
         viewModelScope.launch {
             try {

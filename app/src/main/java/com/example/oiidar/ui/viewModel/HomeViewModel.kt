@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.oiidar.conectionApi.Spotify
 import com.example.oiidar.contantes.TAG
+import com.example.oiidar.convertType.toMs
 import com.example.oiidar.database.entities.ProgramaEntity
 import com.example.oiidar.database.entities.TrackEntity
 import com.example.oiidar.database.entities.UserEntity
 import com.example.oiidar.model.Horas
-import com.example.oiidar.convertType.toMs
 import com.example.oiidar.repositories.Repository
 import com.example.oiidar.ui.uiStates.HomeState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -77,7 +77,7 @@ class HomeViewModel @Inject constructor(
             stateInitial.copy(
                 onShowEnd = { show->
                     _uiState.update {
-                        it.copy(showEnd = !show)
+                        it.copy(showEnd = show)
                     }
                 },
                 onTrigger = { trigger ->

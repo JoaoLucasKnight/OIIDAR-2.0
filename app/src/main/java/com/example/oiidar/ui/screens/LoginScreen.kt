@@ -1,7 +1,6 @@
 package com.example.oiidar.ui.screens
 
 import androidx.compose.foundation.Image
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,16 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.oiidar.R
-import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.components.ButtonAuth
 import com.example.oiidar.ui.viewModel.MainViewModel
 
@@ -27,7 +23,7 @@ import com.example.oiidar.ui.viewModel.MainViewModel
 fun LoginScreen(
     viewModel: MainViewModel,
     authInit: () -> Unit,
-    navController: NavController
+    nav: (String) -> Unit
 ){
     val user by  viewModel.user.collectAsState()
     val check: Boolean by viewModel.auth.collectAsState()
@@ -62,9 +58,6 @@ fun LoginScreen(
                        auth = {authInit()},
                        logIn = { viewModel.checkSaveOrSave()}
                    )
-                    LaunchedEffect(key1 = user) {
-                        if (user != null){ navController.navigate(Destination.Home.route) }
-                    }
                 }
             }
         }

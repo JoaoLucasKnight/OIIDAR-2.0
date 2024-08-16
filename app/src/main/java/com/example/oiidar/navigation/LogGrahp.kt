@@ -15,15 +15,15 @@ fun LogGraph(
 ){
     NavHost(
         navController = navController,
-        startDestination = Destination.Login.route
-    ) {
-        composable(Destination.Login.route) {
+        startDestination = Destination.Login.route,
+        route = Destination.LogOut.route)
+    {
+        composable(Destination.Login.route,) {
             LoginScreen(
                 viewModel = viewModel,
                 authInit = { authInit() },
                 nav = { navController.navigate(it) }
             )
         }
-
     }
 }

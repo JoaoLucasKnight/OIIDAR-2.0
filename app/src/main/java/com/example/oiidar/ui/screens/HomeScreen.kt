@@ -33,7 +33,9 @@ fun HomeScreen(
                         img = state.user?.img,
                         show = state.showEnd,
                         onShow = state.onShowEnd,
-                        logOut = { logOut() }
+                        logOut = {
+                            logOut()
+                        }
                     )
                 },
                 content = { innerPadding ->

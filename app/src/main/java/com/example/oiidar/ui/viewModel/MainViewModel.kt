@@ -19,12 +19,17 @@ class MainViewModel @Inject constructor(
     private val _user = MutableStateFlow<UserEntity?>(null)
     val user = _user.asStateFlow()
 
-    private val _auth = MutableStateFlow<Boolean>(false)
+    private val _auth = MutableStateFlow(false)
     val auth = _auth.asStateFlow()
+
+    private val _state = MutableStateFlow("LOADING")
+    val state = _state.asStateFlow()
 
     fun checkUser() {
         viewModelScope.launch {
-            _user.value = repository.userLogIn()
+            val user = repository.userLogIn()
+            _user.value = user
+            if (user == null) { _state.value = "LOAD"}
         }
     }
     fun logOut(){
@@ -55,13 +60,3 @@ class MainViewModel @Inject constructor(
     fun getAuth(res: Boolean){ _auth.value = res }
 
 }
-
-//    private suspend fun rollback(userEntity: UserEntity,user: Boolean,program: Boolean){
-//        try{
-//            if (user) repository.deleteUser(userEntity)
-//            if (program) repository.deleteProgram(userEntity.nameId)
-//        }catch (e: Exception){
-//            e.printStackTrace()
-//        }
-//    }
-// TODO talvez saje nescessario na hora de salvar playlist

@@ -17,10 +17,12 @@ import com.example.oiidar.ui.text.AppStrings
 fun Music(
     modifier: Modifier,
     status: Boolean,
-    music: TrackEntity?
+    music: TrackEntity?,
+    ms: Long
 ){
     Column(modifier) {
         TextTitle(text = AppStrings.MUSIC_TITLE)
+        Progress(ms)
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),

@@ -8,6 +8,7 @@ import com.example.oiidar.database.entities.UserEntity
 data class HomeState (
     val user: UserEntity? = null,
     val program: ProgramaEntity? = null,
+    val ms: Long = 0,
     val tracks: List<TrackEntity> = emptyList(),
     val track: TrackEntity? = null,
     val loading: String = "LOADING",

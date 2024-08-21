@@ -22,7 +22,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: Repository,
@@ -30,7 +29,6 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeState())
     val uiState = _uiState.asStateFlow()
     init { loadState() }
-
     fun loading(){
         viewModelScope.launch {
             try {
@@ -42,10 +40,12 @@ class HomeViewModel @Inject constructor(
                 }?: run {
                     loadUser()
                 }
+                checkAndUpdateProgramStatus()
             }catch (e: Exception){
                 passState("ERROR")
                 Log.i(TAG, "loading: ${e.message}")
             }
+
         }
     }
     private fun passState(pass: String){ _uiState.update { state-> state.copy(loading = pass) } }
@@ -83,55 +83,61 @@ class HomeViewModel @Inject constructor(
         now: Long = clockNowHoras())
     {
         program?.let {
+            Log.d(TAG, "in status Program")
             if(now in program.startTime..program.finishTime){
-                _uiState.update { state->
-                    state.copy(status = true)
-                }
-            }else {
-                _uiState.update { state->
-                    state.copy(status = false)
-                }
-            }
+                _uiState.update { state-> state.copy(status = true) }
+                discoverTrackPlaying()
+            }else { _uiState.update { state-> state.copy(status = false) } }
         }
+    }
+    private fun updateTrackMs(ms: Long, track: TrackEntity?){
+        _uiState.update { state-> state.copy(ms = ms) }
+        _uiState.update { state-> state.copy(track = track) }
     }
     fun discoverTrackPlaying(
         program: ProgramaEntity? = uiState.value.program,
         listTracks: List<TrackEntity> = uiState.value.tracks,
         now: Long = clockNowHoras()
-    ): Long{
-        var delay: Long = 0
+    ){
         program?.let {
             var start = it.startTime
-            if(now < start) return 0
-            for (t in listTracks){
-                start += t.duration
-                if(start >= now ){
-                    _uiState.update { state->
-                        state.copy(track = t)
+            if((now > start) and (now < it.finishTime)){
+                for (t in listTracks){
+                    start += t.duration
+                    if(start >= now ){
+                        updateTrackMs(start-now, t)
+                        break
                     }
-                    delay = start - now
-                    break
                 }
             }
         }
 
-        return delay
     }
     fun nextTrack(
         track: TrackEntity = uiState.value.track!!,
         listTrack: List<TrackEntity> = uiState.value.tracks
-    ): Long{
-        if (track == listTrack.last()){
-            _uiState.update { state->
-                state.copy(track = null)
-            }
-            return 0
-        }else {
-            val next = listTrack[listTrack.indexOf(track) + 1]
-            _uiState.update { it.copy(track = next) }
-            return next.duration
+    ){
+        if (track != listTrack.last()){
+            val nowTrack = listTrack[listTrack.indexOf(track) + 1]
+            val delay = nowTrack.duration
+            updateTrackMs(delay, nowTrack)
         }
     }
+
+    fun checkMoved(
+        user: UserEntity? = uiState.value.user,
+        program: ProgramaEntity? = uiState.value.program
+    ){
+        viewModelScope.launch {
+            if ((user != null) and (program != null)){
+                if(program != repository.getProgram(user!!)){
+                    loading()
+                }
+            }
+        }
+    }
+
+    // --------- Spotify SDK ---------
     fun playTrack(track: TrackEntity?){
         track?.let {
             Spotify.tocar(track.uri)
@@ -148,6 +154,5 @@ class HomeViewModel @Inject constructor(
             Spotify.adionarFila(uri)
         }
     }
-
 }
 

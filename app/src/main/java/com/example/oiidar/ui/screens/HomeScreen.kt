@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.oiidar.navigation.Destination
 import com.example.oiidar.ui.components.Body
 import com.example.oiidar.ui.components.Header
 import com.example.oiidar.ui.components.NavBottom
@@ -24,7 +25,6 @@ fun HomeScreen(
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
 
-    viewModel.loading()
     when(state.loading){
         "LOAD" -> {
             Scaffold(
@@ -33,16 +33,14 @@ fun HomeScreen(
                         img = state.user?.img,
                         show = state.showEnd,
                         onShow = state.onShowEnd,
-                        logOut = {
-                            logOut()
-                        }
+                        logOut = { logOut() }
                     )
                 },
                 content = { innerPadding ->
                     Body(
                         pad = innerPadding,
                         nav = { nav(it) },
-                        state = state
+                        state = state,
                     )
                 },
                 bottomBar = {
@@ -52,16 +50,13 @@ fun HomeScreen(
                     )
                 }
             )
-            LaunchedEffect(key1 = state) {
+            LaunchedEffect(key1 = true) {
                 viewModel.checkAndUpdateProgramStatus()
-                if(state.status) {
-                    var ms = viewModel.discoverTrackPlaying()
-                    delay(ms)
-                    while((ms != 0L ) and (state.track != null)){
-                        ms = viewModel.nextTrack()
-                        delay(ms)
-                    }
-                }
+                viewModel.checkMoved()
+            }
+            LaunchedEffect(key1 = state.track) {
+                delay(state.ms)
+                if((state.status) and (state.track != null)) { viewModel.nextTrack()}
             }
         }
         "LOADING" -> {
@@ -74,12 +69,9 @@ fun HomeScreen(
             Surface {
                 ErrorScreen()
                 LaunchedEffect(key1 = Unit) {
-                    delay(1500)
-                    logOut()
+                    nav(Destination.LogOut.route)
                 }
             }
         }
     }
 }
-
-

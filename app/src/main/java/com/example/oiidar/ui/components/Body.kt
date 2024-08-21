@@ -24,7 +24,7 @@ fun Body(
     Column(Modifier.padding(pad)){
         Clock(modifier = fatherModifier)
         ProgramComponent(modifier = fatherModifier, nav = {nav(it)}, program = program )
-        Music(modifier = fatherModifier, status = status , music = music )
+        Music(modifier = fatherModifier, status = status , music = music, ms = state.ms )
     }
 }
 @Preview

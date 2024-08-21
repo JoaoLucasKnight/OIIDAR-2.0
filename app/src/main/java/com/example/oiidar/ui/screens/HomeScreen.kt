@@ -50,10 +50,7 @@ fun HomeScreen(
                     )
                 }
             )
-            LaunchedEffect(key1 = true) {
-                viewModel.checkAndUpdateProgramStatus()
-                viewModel.checkMoved()
-            }
+            LaunchedEffect(key1 = true) { viewModel.checkMoved() }
             LaunchedEffect(key1 = state.track) {
                 delay(state.ms)
                 if((state.status) and (state.track != null)) { viewModel.nextTrack()}

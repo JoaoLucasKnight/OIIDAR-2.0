@@ -40,7 +40,6 @@ class HomeViewModel @Inject constructor(
                 }?: run {
                     loadUser()
                 }
-                checkAndUpdateProgramStatus()
             }catch (e: Exception){
                 passState("ERROR")
                 Log.i(TAG, "loading: ${e.message}")
@@ -118,9 +117,19 @@ class HomeViewModel @Inject constructor(
         listTrack: List<TrackEntity> = uiState.value.tracks
     ){
         if (track != listTrack.last()){
-            val nowTrack = listTrack[listTrack.indexOf(track) + 1]
-            val delay = nowTrack.duration
-            updateTrackMs(delay, nowTrack)
+            val x = listTrack.indexOf(track)+1
+            val nextTrack = listTrack[x]
+            val delay = nextTrack.duration
+            updateTrackMs(delay, nextTrack)
+
+            if (uiState.value.trigger){
+                playTrack(nextTrack)
+                for(i in x+1 until listTrack.size){
+                    val uri = listTrack[i].uri
+                    Spotify.adionarFila(uri)
+                }
+                _uiState.update { it.copy(trigger = false) }
+            }
         }
     }
 
@@ -133,6 +142,7 @@ class HomeViewModel @Inject constructor(
                 if(program != repository.getProgram(user!!)){
                     loading()
                 }
+                checkAndUpdateProgramStatus()
             }
         }
     }
@@ -141,7 +151,6 @@ class HomeViewModel @Inject constructor(
     fun playTrack(track: TrackEntity?){
         track?.let {
             Spotify.tocar(track.uri)
-            addQueue(track)
         }
     }
     private fun addQueue(
@@ -149,10 +158,7 @@ class HomeViewModel @Inject constructor(
         tracks: List<TrackEntity> = uiState.value.tracks
     ){
         val x : Int = tracks.indexOf(track) + 1
-        for(i in x until tracks.size){
-            val uri = tracks[i].uri
-            Spotify.adionarFila(uri)
-        }
+
     }
 }
 

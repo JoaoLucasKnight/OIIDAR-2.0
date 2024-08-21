@@ -70,13 +70,11 @@ fun LoginScreen(
                                 .fillMaxHeight(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            val titleBtt = if(check) AppStrings.BTT_AUHT_IN
-                            else AppStrings.BTT_AUHT_FIND
                             ButtonToggle(
                                 checked = check,
                                 toggle = { if (check){ viewModel.checkSaveOrSave()
                                 }else{ authInit() } },
-                                text = titleBtt
+                                trueAndFalse = arrayOf (AppStrings.BTT_AUHT_FIND,AppStrings.BTT_AUHT_IN)
                             )
                         }
                     }

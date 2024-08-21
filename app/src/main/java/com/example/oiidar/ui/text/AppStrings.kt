@@ -10,6 +10,7 @@ object AppStrings {
     const val BTT_AUHT_IN = "Entrar"
     const val BTT_AUHT_FIND = "Solicitar Acesso"
     const val NAVBOTTOM_BTT_NOW = "Iniciar Agora"
+    const val NAVBOTTOM_BTT_CANCELED = "Cancelar"
     const val NAVBOTTOM_BTT_NEXT = "Iniciar na Proxima"
     const val TITLE_PLAYLIST = "Suas Playlists: "
     const val TITLE_E_STAR = "Editar Inicio: "
